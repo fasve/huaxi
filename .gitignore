@@ -47,3 +47,6 @@ travel-api-src.tar.gz
 travel-api/pip-unpack-*/
 *.whl
 *.tar.gz
+# 本地快捷方式与 TS 构建缓存
+*.lnk
+*.tsbuildinfo
