@@ -1,0 +1,327 @@
+<view class="page" wx:if="{{trip}}">
+  <!-- 总览 -->
+  <view class="hero">
+    <view class="hero-top">
+      <view class="hero-mode">{{trip.mode_name}}</view>
+      <view class="hero-pill">{{trip.days}} 天行程</view>
+    </view>
+    <view class="hero-money">
+      <view class="hm-main">
+        <text class="hm-k">预估花费</text>
+        <text class="hm-v t-num">¥{{trip.total_cost}}</text>
+      </view>
+      <view class="hm-side">
+        <text class="hm-k">人均预算 ¥{{trip.budget}}</text>
+        <view class="hm-track">
+          <view class="hm-fill" style="width: {{trip.budget_usage_percent > 100 ? 100 : trip.budget_usage_percent}}%"></view>
+        </view>
+        <text class="hm-pct">{{trip.budget_usage_percent}}%</text>
+      </view>
+    </view>
+    <view wx:if="{{trip.hotel}}" class="hero-line">🏨 {{trip.hotel.name}} × {{trip.hotel_nights}} 晚</view>
+    <view wx:if="{{trip.visit_date}}" class="hero-line">📅 出行日期 {{trip.visit_date}}</view>
+  </view>
+
+  <!-- 游学线横幅 -->
+  <view wx:if="{{trip.preset_route}}" class="card-tint preset">
+    <view class="preset-top">
+      <text class="preset-eyebrow">预设主题路线</text>
+      <text class="badge {{trip.preset_degraded ? 'badge-warn' : 'badge-ok'}}">
+        {{trip.preset_degraded ? '有站点已降级' : '按日期校验通过'}}
+      </text>
+    </view>
+    <view class="preset-title">{{trip.preset_route.title}}</view>
+    <view class="t-xs">{{trip.preset_route.subtitle}}</view>
+    <view wx:if="{{trip.preset_notes.length}}" class="preset-notes">
+      <view wx:for="{{trip.preset_notes}}" wx:key="index" class="preset-note">· {{item}}</view>
+      <view wx:if="{{trip.preset_notes_more}}" class="preset-note more">
+        还有 {{trip.preset_notes_more}} 条提示，见下方逐站讲解
+      </view>
+    </view>
+    <view class="preset-actions">
+      <button class="btn btn-ghost btn-sm" bindtap="goPresetRoute">查看完整游学线</button>
+      <button wx:if="{{trip.visit_date}}" class="btn btn-soft btn-sm" bindtap="subscribeReminder">设置出行提醒</button>
+    </view>
+  </view>
+
+  <!-- 天气条 -->
+  <view wx:if="{{travelWeather}}" class="wstrip">
+    <view class="ws-now">
+      <text class="ws-temp t-num">{{travelWeather.live.temperature}}°</text>
+      <view class="ws-text">
+        <text class="ws-desc">花溪 · {{travelWeather.live.weather}}</text>
+        <text class="t-xs">{{travelWeather.live.winddirection}}风 {{travelWeather.live.windpower}}级</text>
+      </view>
+    </view>
+    <view class="ws-days">
+      <view wx:for="{{travelWeather.days}}" wx:key="week" class="ws-day">
+        <text class="ws-week">{{item.week}}</text>
+        <text class="ws-t">{{item.t}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 路线地图（默认收起，点开再加载地图，避免首屏被地图挤占） -->
+  <view wx:if="{{mapMarkers.length}}" class="card map-card">
+    <view class="map-head" bindtap="toggleMap">
+      <view class="map-title">
+        <text class="t-h4">路线地图</text>
+        <text class="t-xs map-sub">{{mapOpen ? '当日点位与顺序' : '点开查看当日点位与顺序'}}</text>
+      </view>
+      <view class="map-right">
+        <view
+          wx:for="{{trip.days_plan}}"
+          wx:key="day_index"
+          wx:for-item="d"
+          class="map-day {{mapDay === d.day_index ? 'on' : ''}}"
+          data-day="{{d.day_index}}"
+          catchtap="pickMapDay"
+        >D{{d.day_index}}</view>
+        <text class="map-caret {{mapOpen ? 'up' : ''}}">▾</text>
+      </view>
+    </view>
+
+    <block wx:if="{{mapOpen}}">
+      <map
+        class="map"
+        latitude="{{mapCenter.latitude}}"
+        longitude="{{mapCenter.longitude}}"
+        scale="13"
+        markers="{{mapMarkers}}"
+        polyline="{{mapPolyline}}"
+      />
+      <view class="t-xs map-tip">连线为当日行程顺序示意，实际通勤见每日通勤提示</view>
+    </block>
+  </view>
+
+  <!-- 权重画像 -->
+  <view wx:if="{{trip.weight_profile.length}}" class="card">
+    <view class="row-between">
+      <view class="t-h4">权重画像</view>
+      <text class="badge {{trip.is_personalized ? 'badge-warn' : 'badge-line'}}">
+        {{trip.is_personalized ? '已个性化' : '模式默认'}}
+      </text>
+    </view>
+    <view class="wp">
+      <view wx:for="{{trip.weight_profile}}" wx:key="key" class="wp-item">
+        <view class="wp-top">
+          <text class="wp-label">{{item.icon}} {{item.label}}</text>
+          <text class="wp-pct t-num">{{item.percent}}%</text>
+        </view>
+        <view class="wp-bar">
+          <view class="wp-fill" style="width: {{item.percent}}%"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 松弛提示 -->
+  <view wx:if="{{trip.relax_log.length}}" class="card relax">
+    <view class="row gap-1">
+      <text class="relax-icon">i</text>
+      <text class="t-h4">生成时的调整说明</text>
+    </view>
+    <view wx:for="{{trip.relax_log}}" wx:key="index" class="t-sm relax-line">· {{item.label}}</view>
+  </view>
+
+  <!-- 小贴士 -->
+  <view wx:if="{{enrichment}}" class="card tips">
+    <view class="row-between">
+      <view class="t-h4">✨ 行程小贴士</view>
+      <text class="tips-refresh" bindtap="refreshEnrichment">{{enrichLoading ? '更新中…' : '换一版'}}</text>
+    </view>
+    <view class="tips-summary">{{enrichment.summary}}</view>
+    <view wx:for="{{enrichment.days}}" wx:key="day_index" wx:for-item="d" class="tips-day">
+      <view class="tips-day-title">Day {{d.day_index}} · {{d.title}}</view>
+      <view wx:for="{{d.tips}}" wx:key="index" wx:for-item="tip" class="t-sm tips-line">
+        {{tip.type === 'weather' ? '🌦️' : tip.type === 'food' ? '🍜' : tip.type === 'transport' ? '🚗' : tip.type === 'budget' ? '💰' : tip.type === 'booking' ? '📌' : '•'}} {{tip.text}}
+      </view>
+    </view>
+    <view wx:if="{{enrichment.provider === 'rule'}}" class="t-xs tips-foot">当前为规则生成的小贴士，配置 AI 润色后可获得更自然的文案。</view>
+  </view>
+
+  <!-- 日期锚点 -->
+  <scroll-view wx:if="{{trip.days_plan.length > 1}}" scroll-x class="day-tabs">
+    <view
+      wx:for="{{trip.days_plan}}"
+      wx:key="day_index"
+      wx:for-item="d"
+      class="day-tab {{dayTabActive === d.day_index ? 'on' : ''}}"
+      data-day="{{d.day_index}}"
+      bindtap="goDay"
+    >Day {{d.day_index}}</view>
+  </scroll-view>
+
+  <!-- 每日行程 -->
+  <view
+    wx:for="{{trip.days_plan}}"
+    wx:key="day_index"
+    wx:for-item="day"
+    wx:for-index="di"
+    id="day-{{day.day_index}}"
+    class="card day-card"
+  >
+    <view class="day-head">
+      <view class="day-left">
+        <text class="day-tag" style="background: {{day.color}}">D{{day.day_index}}</text>
+        <view class="day-theme-wrap">
+          <view class="day-theme ellipsis">{{day.theme}}</view>
+          <view class="t-xs">{{day.items.length}} 个安排 · 当日 ¥{{day.day_cost}} / 预算 ¥{{day.day_budget}}</view>
+        </view>
+      </view>
+      <text class="day-redrop" data-day="{{day.day_index}}" bindtap="redropDay">换一批</text>
+    </view>
+    <view wx:if="{{segmentsByDay[day.day_index]}}" class="t-xs day-transit">
+      🚕 本日通勤约 {{segmentsByDay[day.day_index].duration_min}} 分钟 · {{segmentsByDay[day.day_index].distance_text}}
+    </view>
+
+    <view class="timeline">
+      <block wx:for="{{day.items}}" wx:key="index" wx:for-item="item" wx:for-index="ii">
+        <view class="tl-row" data-day="{{day.day_index}}" data-slot="{{item.slot}}" bindtap="pickSlot">
+          <view class="tl-time">
+            <text class="tl-start t-num">{{item.start_time}}</text>
+            <text class="tl-dur">{{item.duration_min}}′</text>
+          </view>
+          <view class="tl-rail">
+            <view class="tl-dot" style="background: {{day.color}}"></view>
+            <view class="tl-line"></view>
+          </view>
+          <view class="tl-card">
+            <image wx:if="{{item.image}}" class="tl-thumb" src="{{item.image}}" mode="aspectFill" lazy-load />
+            <view wx:else class="tl-thumb thumb-ph">{{item.icon}}</view>
+            <view class="tl-main">
+              <view class="tl-name ellipsis">
+                {{item.name}}
+                <text wx:if="{{item.gate_label}}" class="badge badge-warn">{{item.gate_label}}</text>
+              </view>
+              <view class="tl-sub ellipsis">{{item.slot_name}} · {{item.cost > 0 ? '¥' + item.cost : '免费'}}</view>
+            </view>
+            <text wx:if="{{item.locked}}" class="tl-lock">锁定</text>
+            <text wx:elif="{{item.slot !== 'lunch' && item.slot !== 'dinner'}}" class="tl-edit">换</text>
+          </view>
+        </view>
+
+        <!-- 游学讲解 -->
+        <view
+          wx:if="{{item.has_narration}}"
+          class="narr"
+          data-di="{{di}}"
+          data-ii="{{ii}}"
+          bindtap="toggleNarration"
+        >
+          <view class="narr-head">
+            <text class="narr-title ellipsis">🎓 {{item.narration_title}}</text>
+            <text class="narr-toggle">{{item.narr_open ? '收起' : '展开'}}</text>
+          </view>
+          <view wx:if="{{item.narr_open}}" class="narr-body">
+            <view class="narr-text">{{item.narration_text}}</view>
+            <view wx:if="{{item.task_card && item.task_card.title}}" class="narr-task">
+              <text class="task-label">研学任务</text>
+              <text class="task-title">{{item.task_card.title}}</text>
+              <text class="task-content">{{item.task_card.content}}</text>
+            </view>
+            <view wx:if="{{item.photo_tip}}" class="t-xs narr-photo">📷 {{item.photo_tip}}</view>
+            <view wx:for="{{item.gate_notes}}" wx:key="*this" wx:for-item="note" class="t-xs narr-gate">· {{note}}</view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 操作 -->
+  <view class="actions">
+    <button class="btn btn-primary btn-block" bindtap="saveTrip">保存到我的行程</button>
+    <view class="act-row">
+      <button class="btn btn-ghost act-btn" bindtap="copyTripText">复制行程单</button>
+      <button class="btn btn-ghost act-btn" bindtap="openAdjust">改天数/预算</button>
+    </view>
+    <view class="act-row">
+      <button class="btn btn-soft act-btn" bindtap="goPersonalize">按权重调整</button>
+      <button class="btn btn-soft act-btn" bindtap="regenerate">重新生成</button>
+    </view>
+  </view>
+  <view wx:if="{{reminderTip}}" class="card t-sm" style="text-align:center">{{reminderTip}}</view>
+
+  <!-- 分享 -->
+  <view class="card share">
+    <view class="t-h4">分享这份行程</view>
+    <view class="t-xs" style="margin-top: 6rpx">好友点开即可查看完整安排，海报可保存到相册</view>
+    <view class="share-actions">
+      <button class="btn btn-ghost" open-type="share">分享给好友</button>
+      <button class="btn btn-primary" bindtap="openPoster">生成海报</button>
+    </view>
+  </view>
+
+  <canvas type="2d" id="posterCanvas" class="poster-canvas"></canvas>
+
+  <!-- 调整天数 / 预算 -->
+  <view wx:if="{{showAdjust}}" class="mask" bindtap="closeAdjust">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-grab"></view>
+      <view class="sheet-head">
+        <view class="sheet-title">增量调整</view>
+        <view class="sheet-close" bindtap="closeAdjust">✕</view>
+      </view>
+      <view class="sheet-body">
+        <view class="adj-row">
+          <text class="t-sm">出行天数</text>
+          <input class="adj-input t-num" type="number" value="{{adjDays}}" bindinput="onAdjDays" />
+        </view>
+        <view class="adj-row">
+          <text class="t-sm">人均预算（元）</text>
+          <input class="adj-input t-num" type="digit" value="{{adjBudget}}" bindinput="onAdjBudget" />
+        </view>
+        <view class="t-xs" style="padding: 8rpx 0 20rpx">只补充 / 删减必要日程，不会整单重排。</view>
+        <view class="adj-actions">
+          <button class="btn btn-ghost act-btn" bindtap="closeAdjust">取消</button>
+          <button class="btn btn-primary act-btn" bindtap="applyAdjust" disabled="{{adjusting}}">确认调整</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 槽位候选 -->
+  <view wx:if="{{showCandidates}}" class="mask" bindtap="closeCandidates">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-grab"></view>
+      <view class="sheet-head">
+        <view class="sheet-title">替换 Day {{adjustDayIndex}} · {{candidatesForSlot === 'morning' ? '上午' : candidatesForSlot === 'afternoon' ? '下午' : '晚间'}}</view>
+        <view class="sheet-close" bindtap="closeCandidates">✕</view>
+      </view>
+      <scroll-view scroll-y class="cand-scroll">
+        <view
+          wx:for="{{candidates}}"
+          wx:key="poi_id"
+          class="cand"
+          data-id="{{item.poi_id}}"
+          bindtap="applyCandidate"
+        >
+          <view class="flex-1">
+            <view class="cand-name">{{item.name}}</view>
+            <view class="t-xs">{{item.category_name}} · 评分 {{item.rating}} · {{item.cost > 0 ? '¥' + item.cost : '免费'}}</view>
+          </view>
+          <text class="cand-go">换</text>
+        </view>
+        <view wx:if="{{!candidates.length}}" class="t-sm" style="padding: 40rpx; text-align: center">暂无候选</view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 海报 -->
+  <view wx:if="{{showPoster}}" class="poster-mask" catchtap="closePoster">
+    <view class="poster-panel" catchtap="noop">
+      <image class="poster-image" src="{{posterPath}}" mode="widthFix" show-menu-by-longpress />
+      <view class="poster-tip">长按图片可直接保存或转发</view>
+      <view class="poster-btns">
+        <button class="btn btn-ghost" bindtap="closePoster">关闭</button>
+        <button class="btn btn-primary" bindtap="savePoster">保存到相册</button>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view wx:elif="{{loading}}" class="loading">
+  <view class="skeleton sk-hero"></view>
+  <view class="skeleton sk-line"></view>
+  <view class="skeleton sk-line"></view>
+</view>

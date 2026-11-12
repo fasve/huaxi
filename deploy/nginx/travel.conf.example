@@ -1,0 +1,159 @@
+# 花溪旅行 · 生产 Nginx 配置模板（设计方案 7.4 / 7.10）
+# 用法：把 example.cn 全部替换为已备案域名，证书换成真实路径，
+#       复制为 /etc/nginx/conf.d/travel.conf 后执行 nginx -t && nginx -s reload。
+# 前提：域名已完成 ICP 备案、服务器在中国内地、443 已放通、证书已签发并配置自动续期。
+
+# ---------- 公共安全头（各 server 通过 include 引用） ----------
+# 以下内容可保存为 /etc/nginx/snippets/travel-security.conf：
+#   add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+#   add_header X-Content-Type-Options "nosniff" always;
+#   add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+#   add_header X-Frame-Options "DENY" always;
+
+# ---------- HTTP → HTTPS ----------
+server {
+    listen 80;
+    listen [::]:80;
+    server_name api.example.cn www.example.cn admin.example.cn cdn.example.cn;
+    # 证书签发/续期用的 ACME 校验目录，其余全部跳转
+    location /.well-known/acme-challenge/ { root /var/www/certbot; }
+    location / { return 301 https://$host$request_uri; }
+}
+
+# ---------- 通用 TLS 参数 ----------
+# 建议放在 http 段或各 server 重复：
+#   ssl_protocols TLSv1.2 TLSv1.3;
+#   ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
+#   ssl_prefer_server_ciphers off;
+#   ssl_session_cache shared:SSL:10m;
+#   ssl_session_timeout 1d;
+#   ssl_stapling on; ssl_stapling_verify on;
+
+# ---------- 1) 游客 API（小程序 request 合法域名） ----------
+server {
+    listen 443 ssl http2;
+    server_name api.example.cn;
+
+    ssl_certificate     /etc/letsencrypt/live/api.example.cn/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.example.cn/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header X-Frame-Options "DENY" always;
+
+    access_log /var/log/nginx/travel-api.access.log;
+    error_log  /var/log/nginx/travel-api.error.log;
+
+    client_max_body_size 12m;
+
+    # 管理端接口不对游客 API 域开放（职责分离，降低类目与攻击面风险）
+    location /api/v1/admin/ { return 404; }
+    # 生产关闭在线接口文档；如需保留，改为 IP 白名单 + Basic Auth
+    location ~ ^/(docs|redoc|openapi.json) { return 404; }
+
+    # 静态图片：也可改由下面 CDN 域单独托管
+    location /static/ {
+        alias /srv/travel/static/;
+        expires 7d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_read_timeout 30s;
+    }
+}
+
+# ---------- 2) PC 游客端静态站点 ----------
+server {
+    listen 443 ssl http2;
+    server_name www.example.cn;
+
+    ssl_certificate     /etc/letsencrypt/live/www.example.cn/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/www.example.cn/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    root /srv/travel/portal-dist;
+    index index.html;
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml;
+
+    # 隐私指引静态页（portal/public/privacy.html 构建时复制到 dist）
+    location = /privacy.html { try_files /privacy.html =404; }
+
+    # SPA history 路由
+    location / { try_files $uri $uri/ /index.html; }
+
+    # 同源反代，避免跨域与混合内容
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+    location /static/ {
+        proxy_pass http://127.0.0.1:8000;
+        expires 7d;
+    }
+}
+
+# ---------- 3) 管理后台（独立子域，建议再加 IP 白名单 / Basic Auth） ----------
+server {
+    listen 443 ssl http2;
+    server_name admin.example.cn;
+
+    ssl_certificate     /etc/letsencrypt/live/admin.example.cn/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/admin.example.cn/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header Referrer-Policy "no-referrer" always;
+
+    # 按需启用：allow 公司出口 IP; deny all;
+    # auth_basic "travel-admin"; auth_basic_user_file /etc/nginx/.htpasswd;
+
+    root /srv/travel/admin-dist;
+    index index.html;
+    location / { try_files $uri $uri/ /index.html; }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+    location /static/ { proxy_pass http://127.0.0.1:8000; }
+}
+
+# ---------- 4) 图片 CDN（小程序 downloadFile 合法域名） ----------
+server {
+    listen 443 ssl http2;
+    server_name cdn.example.cn;
+
+    ssl_certificate     /etc/letsencrypt/live/cdn.example.cn/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/cdn.example.cn/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    add_header X-Content-Type-Options "nosniff" always;
+    root /srv/travel/static;
+    location / {
+        try_files $uri =404;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        add_header Access-Control-Allow-Origin "https://servicewechat.com" always;
+    }
+}

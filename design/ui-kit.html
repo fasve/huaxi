@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>花溪旅行 · 小程序设计系统</title>
+<style>
+  :root{
+    --brand:#2f7d5c; --brand-deep:#1f6b4f; --brand-mid:#6fb79a;
+    --brand-tint:#eaf4ef; --brand-tint-2:#f4faf7;
+    --accent:#d97734; --accent-tint:#fdf1e7;
+    --ink:#14211c; --body:#3d4a44; --muted:#8a9a93; --faint:#b7c2bd;
+    --line:#e6ede9; --line-soft:#f0f4f2; --bg:#f4f7f5;
+    --ok:#2e9e63; --warn:#c77d1e; --danger:#c6473a; --info:#3e7cb1;
+    --r-sm:4px; --r-md:6px; --r-lg:10px; --r-xl:14px; --pill:999px;
+    --sh-card:0 1px 5px rgba(20,33,28,.05);
+    --sh-raise:0 5px 15px rgba(20,33,28,.12);
+    --sh-brand:0 4px 10px rgba(47,125,92,.24);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:34px 36px 44px;background:#eef2f0;font-family:"PingFang SC","Microsoft YaHei",sans-serif;color:var(--body)}
+  h1{margin:0 0 6px;font-size:22px;color:var(--ink)}
+  .lead{margin:0 0 26px;font-size:12.5px;color:#5b6b64;line-height:1.8}
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1180px}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 18px 20px;box-shadow:var(--sh-card)}
+  .panel h2{margin:0 0 4px;font-size:13px;color:var(--ink);letter-spacing:.3px}
+  .panel .sub{margin:0 0 14px;font-size:10.5px;color:var(--muted)}
+  .span2{grid-column:span 2}
+  .span3{grid-column:span 3}
+
+  /* 色板 */
+  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .sw{border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+  .sw .chipc{height:44px}
+  .sw .meta{padding:6px 8px;font-size:9.5px;line-height:1.4;color:var(--muted)}
+  .sw .meta b{display:block;font-size:10.5px;color:var(--ink)}
+  .tokens{display:flex;flex-direction:column;gap:7px;margin-top:12px;font-size:11px;color:var(--muted)}
+  .tokens div{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line-soft);padding-bottom:6px}
+  .tokens b{color:var(--ink);font-weight:600}
+
+  /* 字阶 */
+  .type-row{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line-soft)}
+  .type-row:last-child{border-bottom:none}
+  .type-k{flex:none;width:96px;font-size:9.5px;color:var(--faint);font-family:ui-monospace,Consolas,monospace}
+  .t-h1{font-size:24px;font-weight:700;color:var(--ink);line-height:1.3}
+  .t-h2{font-size:19px;font-weight:700;color:var(--ink);line-height:1.35}
+  .t-h3{font-size:16px;font-weight:700;color:var(--ink);line-height:1.4}
+  .t-h4{font-size:14px;font-weight:600;color:var(--ink);line-height:1.45}
+  .t-body{font-size:14px;color:var(--body)}
+  .t-sm{font-size:12px;color:var(--muted)}
+  .t-xs{font-size:10px;color:var(--faint)}
+
+  /* 按钮 */
+  .btn-row{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+  .btn{height:44px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--pill);font-size:15px;font-weight:600}
+  .btn-primary{background:linear-gradient(135deg,var(--brand),#3d9470);color:#fff;box-shadow:var(--sh-brand)}
+  .btn-ghost{background:#fff;color:var(--brand);border:1px solid rgba(47,125,92,.45);font-size:14px}
+  .btn-soft{background:var(--brand-tint);color:var(--brand-deep);font-size:14px}
+  .btn-dis{background:linear-gradient(135deg,var(--brand),#3d9470);color:#fff;opacity:.55}
+  .btn-sm{height:32px;padding:0 14px;font-size:12px}
+
+  /* 胶囊 / 标签 / 徽标 */
+  .chip{display:inline-flex;align-items:center;height:30px;padding:0 13px;border-radius:var(--pill);background:#f2f6f4;font-size:13px;color:var(--body);border:1px solid transparent}
+  .chip.on{background:var(--brand-tint);color:var(--brand-deep);border-color:var(--brand);font-weight:600}
+  .chip.sm{height:26px;padding:0 10px;font-size:11.5px}
+  .tag{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:var(--r-sm);background:#f1f6f3;color:#4e7b66;font-size:10px}
+  .tag-brand{background:var(--brand-tint);color:var(--brand-deep)}
+  .tag-accent{background:var(--accent-tint);color:#b4601f}
+  .tag-line{background:transparent;border:1px solid var(--line);color:var(--muted)}
+  .badge{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:var(--pill);font-size:10px;font-weight:600}
+  .badge-ok{background:#e7f6ee;color:#24864f}
+  .badge-warn{background:#fff2df;color:#9a5a13}
+  .badge-danger{background:#fdeceb;color:#b23a2f}
+  .badge-info{background:#eaf2fa;color:#2f6c9e}
+  .badge-line{background:transparent;border:1px solid var(--line);color:var(--muted)}
+
+  /* 卡片样例 */
+  .demo-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-card)}
+  .demo-tint{background:linear-gradient(160deg,var(--brand-tint-2) 0%,#fff 70%);border:1px solid #dcebe2;border-radius:var(--r-lg);padding:16px}
+  .demo-warn{background:#fffaf0;border:1px solid #f1e2c4;border-radius:var(--r-lg);padding:16px}
+  .sec-title{position:relative;padding-left:9px;font-size:17px;font-weight:700;color:var(--ink);line-height:1.2}
+  .sec-title::before{content:"";position:absolute;left:0;top:4px;bottom:3px;width:3px;border-radius:2px;background:linear-gradient(180deg,var(--brand),var(--brand-mid))}
+  .sec-sub{margin-top:3px;padding-left:9px;font-size:11px;color:var(--muted)}
+
+  /* 空态 / 骨架 */
+  .empty{display:flex;flex-direction:column;align-items:center;gap:5px;padding:22px 16px;text-align:center}
+  .empty-icon{width:64px;height:64px;border-radius:50%;background:var(--brand-tint);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:6px}
+  .empty-title{font-size:14px;font-weight:600;color:var(--ink)}
+  .empty-text{font-size:12px;color:var(--muted);line-height:1.7}
+  .sk{height:14px;border-radius:6px;background:linear-gradient(90deg,#eef2f0 25%,#f6f9f7 37%,#eef2f0 63%);background-size:400% 100%;margin-top:8px}
+
+  /* 时间轴 */
+  .tl{display:flex;gap:6px;margin-top:10px}
+  .tl-time{flex:none;width:44px;padding-top:8px;font-size:11.5px;font-weight:700;color:var(--ink)}
+  .tl-rail{flex:none;width:10px;display:flex;flex-direction:column;align-items:center;padding-top:11px}
+  .tl-dot{width:7px;height:7px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 3px rgba(47,125,92,.1)}
+  .tl-line{flex:1;width:1px;background:var(--line);margin-top:4px}
+  .tl-card{flex:1;display:flex;align-items:center;gap:8px;padding:7px;margin:3px 0;border-radius:var(--r-md);background:#fbfcfb;border:1px solid var(--line-soft)}
+  .tl-thumb{width:54px;height:41px;border-radius:var(--r-sm);background:linear-gradient(135deg,#cfe3d6,#a8cbb8);display:flex;align-items:center;justify-content:center;font-size:17px}
+  .tl-name{font-size:13px;font-weight:600;color:var(--ink)}
+  .tl-sub{margin-top:2px;font-size:10px;color:var(--muted)}
+
+  /* 弹层 */
+  .sheet-demo{border-radius:14px 14px 0 0;background:#fff;box-shadow:0 -5px 18px rgba(16,28,22,.14);padding:0 0 14px;border:1px solid var(--line)}
+  .grab{width:36px;height:4px;border-radius:99px;background:#dfe7e3;margin:8px auto 2px}
+  .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:6px 16px 2px}
+  .sheet-title{font-size:16px;font-weight:700;color:var(--ink)}
+  .sheet-close{width:28px;height:28px;border-radius:50%;background:#f2f6f4;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:14px}
+
+  .icons{display:flex;gap:16px;align-items:flex-end;margin-top:6px}
+  .icons figure{margin:0;text-align:center}
+  .icons img{width:32px;height:32px;display:block;margin:0 auto 4px}
+  .icons figcaption{font-size:9px;color:var(--faint)}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .note{margin-top:10px;font-size:10px;color:var(--faint);line-height:1.6}
+</style>
+</head>
+<body>
+  <h1>花溪旅行 · 小程序设计系统</h1>
+  <p class="lead">所有数值在 <code>app.wxss</code> 里以 CSS 变量落地（<code>--brand</code> / <code>--r-lg</code> / <code>--sh-card</code> …），页面只引用变量，不写死色值。尺寸走 4rpx 栅格；此图按 1rpx = 0.5px 折算。</p>
+
+  <div class="board">
+    <!-- 色板 -->
+    <section class="panel">
+      <h2>01 色板</h2>
+      <p class="sub">青绿为主，暖橙只给价格与提醒，其余靠中性灰分层</p>
+      <div class="swatches">
+        <div class="sw"><div class="chipc" style="background:#1f6b4f"></div><div class="meta"><b>brand-deep</b>#1F6B4F</div></div>
+        <div class="sw"><div class="chipc" style="background:#2f7d5c"></div><div class="meta"><b>brand</b>#2F7D5C</div></div>
+        <div class="sw"><div class="chipc" style="background:#6fb79a"></div><div class="meta"><b>brand-mid</b>#6FB79A</div></div>
+        <div class="sw"><div class="chipc" style="background:#eaf4ef"></div><div class="meta"><b>brand-tint</b>#EAF4EF</div></div>
+        <div class="sw"><div class="chipc" style="background:#d97734"></div><div class="meta"><b>accent</b>#D97734</div></div>
+        <div class="sw"><div class="chipc" style="background:#14211c"></div><div class="meta"><b>ink</b>#14211C</div></div>
+        <div class="sw"><div class="chipc" style="background:#3d4a44"></div><div class="meta"><b>body</b>#3D4A44</div></div>
+        <div class="sw"><div class="chipc" style="background:#8a9a93"></div><div class="meta"><b>muted</b>#8A9A93</div></div>
+        <div class="sw"><div class="chipc" style="background:#e6ede9"></div><div class="meta"><b>line</b>#E6EDE9</div></div>
+        <div class="sw"><div class="chipc" style="background:#f4f7f5"></div><div class="meta"><b>bg</b>#F4F7F5</div></div>
+        <div class="sw"><div class="chipc" style="background:#2e9e63"></div><div class="meta"><b>ok</b>#2E9E63</div></div>
+        <div class="sw"><div class="chipc" style="background:#c6473a"></div><div class="meta"><b>danger</b>#C6473A</div></div>
+      </div>
+      <div class="tokens">
+        <div><b>圆角</b><span>4 / 6 / 10 / 14 / pill</span></div>
+        <div><b>阴影</b><span>card · raise · sheet · brand</span></div>
+        <div><b>间距</b><span>8 / 16 / 24 / 32 / 40 / 48</span></div>
+        <div><b>栅格</b><span>页边距 24rpx</span></div>
+      </div>
+    </section>
+
+    <!-- 字阶 -->
+    <section class="panel">
+      <h2>02 字阶</h2>
+      <p class="sub">系统字，最多 6 档；数字统一 tabular-nums 对齐</p>
+      <div class="type-row"><span class="type-k">t-h1 48rpx</span><span class="t-h1">把花溪玩明白</span></div>
+      <div class="type-row"><span class="type-k">t-h2 38rpx</span><span class="t-h2">选择旅行方式</span></div>
+      <div class="type-row"><span class="type-k">t-h3 32rpx</span><span class="t-h3">天数与预算</span></div>
+      <div class="type-row"><span class="type-k">t-h4 28rpx</span><span class="t-h4">路线地图</span></div>
+      <div class="type-row"><span class="type-k">t-body 28rpx</span><span class="t-body">从主门沿中轴线步入明德广场。</span></div>
+      <div class="type-row"><span class="type-k">t-sm 24rpx</span><span class="t-sm">古镇 · 约 210 分钟</span></div>
+      <div class="type-row"><span class="type-k">t-xs 20rpx</span><span class="t-xs">数据口径：本地演示种子数据</span></div>
+      <div class="note">价格 / 评分 / 金额：<b style="color:#d97734">¥1,146</b> · <b style="color:#d97734">★ 4.7</b>，均带 tabular-nums，避免数字跳动。</div>
+    </section>
+
+    <!-- 按钮 -->
+    <section class="panel">
+      <h2>03 按钮</h2>
+      <p class="sub">主按钮只出现一次；次级用 ghost，轻操作用 soft</p>
+      <div class="btn-row">
+        <span class="btn btn-primary">生成行程</span>
+        <span class="btn btn-ghost btn-sm">复制行程单</span>
+        <span class="btn btn-soft btn-sm">按权重个性化</span>
+        <span class="btn btn-primary btn-dis btn-sm">禁用态</span>
+      </div>
+      <div class="note">高度 88rpx / 小号 64rpx；按压缩放 0.985，圆角全胶囊；主按钮带 brand 阴影，其余不带。</div>
+    </section>
+
+    <!-- 胶囊与标签 -->
+    <section class="panel span3">
+      <h2>04 胶囊 · 标签 · 徽标</h2>
+      <p class="sub">可点的是 chip（30px 高），只读的是 tag（20px 高），状态用 badge</p>
+      <div class="row" style="margin-bottom:10px">
+        <span class="chip">家庭亲子</span>
+        <span class="chip on">情侣 / 朋友</span>
+        <span class="chip sm">¥800</span>
+        <span class="chip sm on">¥1500</span>
+      </div>
+      <div class="row" style="margin-bottom:10px">
+        <span class="tag tag-brand">景点</span>
+        <span class="tag">历史人文</span>
+        <span class="tag tag-line">古镇</span>
+        <span class="tag tag-accent">★ 4.7</span>
+      </div>
+      <div class="row">
+        <span class="badge badge-ok">预算内 · 96%</span>
+        <span class="badge badge-warn">需预约</span>
+        <span class="badge badge-danger">超出预算</span>
+        <span class="badge badge-info">IP 定位</span>
+        <span class="badge badge-line">模式默认</span>
+      </div>
+    </section>
+
+    <!-- 卡片与区块 -->
+    <section class="panel span2">
+      <h2>05 卡片与区块标题</h2>
+      <p class="sub">1px 描边 + 极浅投影分层；标题左侧 3px 渐变竖杠</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <div class="sec-title">选择旅行方式</div>
+          <div class="sec-sub">同一组需求，四种节奏</div>
+          <div class="demo-card" style="margin-top:10px">
+            <div class="t-h4">出行前，先看实时天气</div>
+            <div class="t-xs" style="margin-top:3px">花溪区 · 实况与未来 15 天</div>
+            <div style="display:flex;align-items:flex-end;gap:10px;margin-top:10px">
+              <span style="font-size:34px;font-weight:800;color:#14211c;line-height:1;letter-spacing:-1px">16°</span>
+              <div><div style="font-size:14px;font-weight:700;color:#2f7d5c">阴</div><div class="t-xs">体感 14° · 湿度 78%</div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="demo-tint" style="margin-bottom:10px">
+            <div class="t-xs" style="color:#2f7d5c;font-weight:700;letter-spacing:.5px">预设主题路线</div>
+            <div class="t-h4" style="margin-top:4px">百年贵大 · 溪山校园游学线</div>
+            <div class="t-xs" style="margin-top:4px">建筑遗产 + 校史 + 生态辨识</div>
+          </div>
+          <div class="demo-warn">
+            <div class="t-h4">生成时的调整说明</div>
+            <div class="t-sm" style="margin-top:6px">· 校史馆周末闭馆，已降级为馆外讲解</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 时间轴 -->
+    <section class="panel">
+      <h2>06 时间轴</h2>
+      <p class="sub">左侧时间、中间圆点与竖线、右侧卡片</p>
+      <div class="tl">
+        <div class="tl-time">09:00<span style="display:block;font-size:9px;color:#b7c2bd;font-weight:400">20′</span></div>
+        <div class="tl-rail"><span class="tl-dot"></span><span class="tl-line"></span></div>
+        <div class="tl-card">
+          <div class="tl-thumb">🎓</div>
+          <div><div class="tl-name">明德广场</div><div class="tl-sub">上午 · 免费</div></div>
+        </div>
+      </div>
+      <div class="tl" style="margin-top:0">
+        <div class="tl-time">12:30<span style="display:block;font-size:9px;color:#b7c2bd;font-weight:400">60′</span></div>
+        <div class="tl-rail"><span class="tl-dot" style="background:#e6803a"></span></div>
+        <div class="tl-card">
+          <div class="tl-thumb" style="background:linear-gradient(135deg,#f0d0b4,#dcae86)">🍜</div>
+          <div><div class="tl-name">青岩状元蹄</div><div class="tl-sub">午餐 · ¥65</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 空态 / 骨架 / 弹层 -->
+    <section class="panel span2">
+      <h2>07 空态 · 骨架 · 底部弹层</h2>
+      <p class="sub">加载不白屏、空态给下一步动作、弹层带抓手</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:12px;align-items:start">
+        <div class="demo-card">
+          <div class="empty">
+            <div class="empty-icon">🔍</div>
+            <div class="empty-title">没有符合条件的资源</div>
+            <div class="empty-text">试试放宽评分 / 价格筛选</div>
+          </div>
+        </div>
+        <div class="demo-card">
+          <div class="sk" style="width:70%"></div>
+          <div class="sk" style="width:92%"></div>
+          <div class="sk" style="width:55%"></div>
+          <div class="sk" style="height:44px;margin-top:12px"></div>
+        </div>
+        <div class="sheet-demo">
+          <div class="grab"></div>
+          <div class="sheet-head"><span class="sheet-title">青岩古镇</span><span class="sheet-close">✕</span></div>
+          <div style="padding:8px 16px 0">
+            <div class="row"><span class="tag tag-brand">景点</span><span class="tag tag-line">古镇</span><span class="tag tag-accent">★ 4.7</span></div>
+            <div style="display:flex;gap:14px;margin-top:10px">
+              <div><div class="t-xs">建议时长</div><div style="font-size:13px;color:#14211c">210 分钟</div></div>
+              <div><div class="t-xs">门票</div><div style="font-size:13px;color:#d97734">¥30</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 图标 -->
+    <section class="panel">
+      <h2>08 图标</h2>
+      <p class="sub">线性 5.5px 描边，与文字同色；tabBar 常态 / 选中两套</p>
+      <div class="icons">
+        <figure><img src="../travel-miniapp/assets/tabbar/home.png" alt=""><figcaption>首页</figcaption></figure>
+        <figure><img src="../travel-miniapp/assets/tabbar/discover.png" alt=""><figcaption>发现</figcaption></figure>
+        <figure><img src="../travel-miniapp/assets/tabbar/plan.png" alt=""><figcaption>定制</figcaption></figure>
+        <figure><img src="../travel-miniapp/assets/tabbar/mine.png" alt=""><figcaption>我的</figcaption></figure>
+        <figure><img src="../travel-miniapp/assets/tabbar/home-on.png" alt=""><figcaption>选中</figcaption></figure>
+      </div>
+      <div class="note">81×81 PNG，透明底，两套颜色（#8A9A93 / #2F7D5C）；由 <code>tools/make_tab_icons.py</code> 生成，改色改形只需重跑脚本。</div>
+    </section>
+  </div>
+</body>
+</html>

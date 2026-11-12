@@ -1,0 +1,94 @@
+<view class="page has-tabbar">
+  <!-- 身份卡 -->
+  <view class="profile">
+    <view class="p-avatar">{{user && !user.is_guest ? '🙂' : '🧳'}}</view>
+    <view class="p-info">
+      <view class="p-name">{{user ? (user.nickname || user.username) : '未登录'}}</view>
+      <view class="p-sub">
+        {{user ? (user.is_guest ? '游客模式 · 数据不与账号绑定' : '账号 ' + user.username) : '登录后可保存并同步行程'}}
+      </view>
+    </view>
+    <text wx:if="{{user}}" class="p-quit" bindtap="onLogout">退出</text>
+  </view>
+
+  <!-- 未登录引导 -->
+  <view wx:if="{{!user}}" class="card auth">
+    <view class="t-h3">登录后同步你的行程</view>
+    <view class="t-xs" style="margin: 8rpx 0 24rpx">注册一个账号，行程跟着账号走，换手机也能看到；也可以先用游客身份体验。</view>
+    <button class="btn btn-primary btn-block" bindtap="gotoLogin">登录 / 注册</button>
+    <button class="btn btn-ghost btn-block" style="margin-top: 16rpx" bindtap="guestLogin">以游客身份体验</button>
+  </view>
+
+  <!-- 我的行程 -->
+  <view class="sec-head">
+    <view>
+      <view class="sec-title">我的行程</view>
+      <view class="sec-sub">{{trips.length ? trips.length + ' 条已保存' : '保存后可随时打开'}}</view>
+    </view>
+    <text class="sec-more" bindtap="goPlan">＋ 新建</text>
+  </view>
+
+  <view class="card list">
+    <view wx:if="{{!user}}" class="empty">
+      <view class="empty-icon">🔒</view>
+      <view class="empty-title">登录后查看已保存的行程</view>
+      <view class="empty-text">在行程详情页点「保存到我的行程」就会出现在这里</view>
+    </view>
+
+    <view wx:elif="{{!trips.length && !loading}}" class="empty">
+      <view class="empty-icon">🧳</view>
+      <view class="empty-title">还没有保存的行程</view>
+      <view class="empty-text">选一个旅行模式，填好天数与预算，就能生成专属路线</view>
+      <button class="btn btn-primary btn-sm" style="margin-top: 22rpx" bindtap="goPlan">去定制行程</button>
+    </view>
+
+    <view wx:else>
+      <view wx:for="{{trips}}" wx:key="trip_id" class="trip">
+        <view class="trip-main" data-id="{{item.trip_id}}" bindtap="openTrip">
+          <view class="trip-head">
+            <text class="trip-emoji">{{item.emoji}}</text>
+            <text class="trip-name">{{item.mode_name}} · {{item.days}} 天</text>
+            <text class="badge {{item.status === 'saved' ? 'badge-ok' : 'badge-line'}}">{{item.status_name}}</text>
+          </view>
+          <view class="trip-meta">
+            <text class="t-xs">{{item.created_text}}</text>
+            <text class="t-xs">预算 ¥{{item.budget}}</text>
+            <text class="trip-spend t-num">预估 ¥{{item.total_cost}}</text>
+          </view>
+          <view class="trip-bar">
+            <view class="trip-fill" style="width: {{item.usage_percent > 100 ? 100 : item.usage_percent}}%"></view>
+          </view>
+        </view>
+        <text class="trip-del" data-id="{{item.trip_id}}" bindtap="removeTrip">删除</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 合规与帮助 -->
+  <view class="sec-head">
+    <view>
+      <view class="sec-title">合规与帮助</view>
+      <view class="sec-sub">隐私与数据都在你的控制下</view>
+    </view>
+  </view>
+
+  <view class="card links">
+    <view class="link" data-doc="privacy" bindtap="openPolicy">
+      <text class="link-t">隐私保护指引</text>
+      <text class="link-a">›</text>
+    </view>
+    <view class="link" data-doc="terms" bindtap="openPolicy">
+      <text class="link-t">服务条款</text>
+      <text class="link-a">›</text>
+    </view>
+    <view wx:if="{{canDebugHost}}" class="link" bindtap="editApiHost">
+      <text class="link-t">后端地址（调试）</text>
+      <text class="link-a">{{apiHost}}</text>
+    </view>
+    <view class="link" bindtap="withdrawConsent">
+      <text class="link-t">撤回隐私同意 / 清除本地数据</text>
+      <text class="link-a">›</text>
+    </view>
+    <view class="links-note">本服务仅提供旅游信息查询与行程参考，不含预订、代订、支付等交易功能。</view>
+  </view>
+</view>

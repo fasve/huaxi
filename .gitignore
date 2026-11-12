@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 本地配置（含数据库密码与高德密钥，勿提交）
+travel-api/.env
+travel-portal/.env.local
+travel-portal/.env.*.local
+
+# Node
+node_modules/
+dist/
+
+# 小程序
+travel-miniapp/project.private.config.json
+
+# 运行时图片资源（体积大，可用 scripts/fetch_images.py 重新抓取）
+travel-api/static/poi/*
+!travel-api/static/poi/.gitkeep
+
+# IDE
+.idea/workspace.xml
+.idea/shelf/
+.DS_Store
+
+# 本地备份（孤儿图/临时导出）
+.backup/
+
+travel.sql
+travel-api/scripts/cloud_images.json
+travel-api/.token.tmp
+
+# 2026-11 补充：IDE / 临时产物 / 日志
+.idea/
+.tmp-build/
+.workbuddy/
+.trip_id_test
+*.log
+travel-api/logs/
+.pytest_cache/
+.mypy_cache/
+# 构建/打包产物与 pip 临时目录
+travel-api-src.zip
+travel-api-src.tar.gz
+travel-api/pip-unpack-*/
+*.whl
+*.tar.gz

@@ -1,0 +1,50 @@
+# Exact versions verified on this machine (Python 3.11.4 / Windows).
+# Use this file to reproduce the environment quickly; requirements.txt keeps
+# loose >= ranges which are slow to resolve on a flaky network:
+#   uv pip install -r requirements.lock.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+# Keep this file ASCII-only (pip reads requirement files with the OS codec;
+# this Windows box defaults to GBK, so non-ASCII comments break the parse).
+annotated-doc==0.0.6
+annotated-types==0.8.0
+anyio==4.16.0
+certifi==2026.10.23
+cffi==2.1.1
+charset-normalizer==3.5.2
+click==8.5.1
+colorama==0.4.6
+cryptography==50.0.2
+ecdsa==0.19.2
+et-xmlfile==2.0.0
+fastapi==0.162.4
+h11==0.16.0
+httptools==0.9.0
+idna==3.20
+numpy==2.4.6
+openpyxl==3.1.5
+opentelemetry-api==1.45.2
+pillow==13.0.0
+pyasn1==0.6.5
+pycparser==3.12
+pydantic==2.14.3
+pydantic-core==2.50.4
+pydantic-settings==2.16.2
+pymysql==1.2.4
+python-dotenv==1.2.4
+python-jose==3.5.0
+python-multipart==0.0.33
+pyyaml==6.0.3
+qrcode==8.2
+redis==8.1.0
+requests==2.34.2
+rsa==4.9.1
+six==1.17.0
+sqlalchemy==2.1.8
+starlette==1.10.0
+typing-extensions==4.16.0
+typing-inspection==0.4.5
+urllib3==2.8.0
+uvicorn==0.54.0
+watchfiles==1.3.0
+websockets==17.4
+httpcore==1.0.9
+httpx==0.28.1

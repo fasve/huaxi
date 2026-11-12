@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>花溪旅行 · 小程序 UI 设计稿</title>
+<style>
+  /* ===== 设计令牌（与 app.wxss 一一对应，1rpx = 0.5px @375 宽） ===== */
+  :root{
+    --brand:#2f7d5c; --brand-deep:#1f6b4f; --brand-mid:#6fb79a;
+    --brand-tint:#eaf4ef; --brand-tint-2:#f4faf7;
+    --accent:#d97734; --accent-tint:#fdf1e7;
+    --ink:#14211c; --body:#3d4a44; --muted:#8a9a93; --faint:#b7c2bd;
+    --line:#e6ede9; --line-soft:#f0f4f2; --bg:#f4f7f5;
+    --ok:#2e9e63; --warn:#c77d1e; --danger:#c6473a; --info:#3e7cb1;
+    --r-sm:4px; --r-md:6px; --r-lg:10px; --r-xl:14px; --pill:999px;
+    --sh-card:0 1px 5px rgba(20,33,28,.05);
+    --sh-raise:0 5px 15px rgba(20,33,28,.12);
+    --sh-brand:0 4px 10px rgba(47,125,92,.24);
+  }
+  *{box-sizing:border-box;-webkit-font-smoothing:antialiased}
+  body{
+    margin:0; padding:28px 24px 40px; background:#dfe7e3;
+    font-family:"PingFang SC","Microsoft YaHei",-apple-system,sans-serif;
+    color:var(--body);
+  }
+  .board-head{max-width:1240px;margin:0 auto 22px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+  .board-head h1{margin:0;font-size:22px;color:#12211b;letter-spacing:.5px}
+  .board-head p{margin:6px 0 0;font-size:12.5px;color:#5b6b64;line-height:1.7}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:#4a5b53}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+  .grid{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(3,375px);gap:26px 22px;justify-content:center}
+  .frame-wrap{display:flex;flex-direction:column;gap:8px}
+  .cap{display:flex;align-items:baseline;gap:8px;font-size:12px;color:#3f4d46}
+  .cap b{font-size:13px;color:#12211b}
+  .cap span{color:#7d8a84}
+
+  /* ===== 手机外框 ===== */
+  .phone{
+    width:375px;height:812px;background:var(--bg);border-radius:38px;overflow:hidden;position:relative;
+    border:8px solid #101d17;box-shadow:0 18px 40px rgba(8,20,14,.28);
+  }
+  .screen{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden}
+
+  /* 状态栏 + 导航栏 */
+  .statusbar{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:12px;font-weight:600;color:#fff;background:var(--brand-deep)}
+  .statusbar .dots{display:flex;gap:4px;align-items:center}
+  .statusbar .dots i{display:block;width:4px;height:8px;border-radius:1px;background:#dff0e7}
+  .navbar{height:44px;display:flex;align-items:center;justify-content:center;position:relative;background:var(--brand-deep);color:#fff;font-size:15px;font-weight:600}
+  .capsule{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:78px;height:28px;border-radius:14px;border:1px solid rgba(255,255,255,.34);display:flex;align-items:center;justify-content:space-around;font-size:12px;color:rgba(255,255,255,.92)}
+  .body{flex:1;overflow:hidden;position:relative}
+
+  /* 首页头图 */
+  .hero{padding:14px 16px 46px;border-radius:0 0 20px 20px;color:#fff;position:relative;overflow:hidden;
+    background:radial-gradient(120% 80% at 92% 4%,rgba(255,255,255,.18) 0%,rgba(255,255,255,0) 62%),
+               linear-gradient(158deg,#1f6b4f 0%,#2f7d5c 46%,#479b76 100%)}
+  .hero::after{content:"";position:absolute;right:-60px;bottom:-80px;width:210px;height:210px;border-radius:50%;border:1px solid rgba(255,255,255,.12)}
+  .hero-top{display:flex;align-items:center;justify-content:space-between}
+  .brand-mark{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;letter-spacing:1.5px}
+  .bm-dot{width:8px;height:8px;border-radius:50%;background:#a9e3c6;box-shadow:0 0 0 4px rgba(169,227,198,.22)}
+  .hero-badge{padding:3px 10px;border-radius:var(--pill);background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);font-size:10px;letter-spacing:.5px}
+  .hero-title{margin-top:13px;font-size:23px;font-weight:800;line-height:1.3;letter-spacing:.5px;max-width:270px}
+  .hero-hl{display:block;color:#d8f5e5}
+  .hero-sub{margin-top:7px;max-width:270px;font-size:11.5px;line-height:1.65;color:rgba(255,255,255,.84)}
+  .hero-actions{display:flex;gap:10px;margin-top:13px}
+  .ha{height:40px;padding:0 17px;display:flex;align-items:center;border-radius:var(--pill);font-size:13.5px;font-weight:700}
+  .ha-primary{background:#fff;color:var(--brand-deep);box-shadow:0 4px 11px rgba(9,40,26,.22)}
+  .ha-ghost{border:1px solid rgba(255,255,255,.66);color:#fff}
+
+  /* 数据条 */
+  .stat-card{position:relative;z-index:2;display:flex;align-items:center;margin:-34px 12px 0;padding:13px 4px;background:#fff;border-radius:var(--r-lg);box-shadow:var(--sh-raise);border:1px solid rgba(255,255,255,.8)}
+  .stat{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .stat-n{font-size:20px;font-weight:700;color:var(--brand-deep);font-variant-numeric:tabular-nums}
+  .stat-l{font-size:10px;color:var(--muted)}
+  .stat-div{width:1px;height:24px;background:var(--line)}
+
+  /* 卡片 */
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;margin:0 12px 12px;box-shadow:var(--sh-card)}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin:16px 12px 8px}
+  .sec-title{position:relative;padding-left:9px;font-size:17px;font-weight:700;color:var(--ink);line-height:1.2}
+  .sec-title::before{content:"";position:absolute;left:0;top:4px;bottom:3px;width:3px;border-radius:2px;background:linear-gradient(180deg,var(--brand),var(--brand-mid))}
+  .sec-sub{margin-top:3px;padding-left:9px;font-size:11px;color:var(--muted)}
+  .sec-more{font-size:12px;color:var(--brand);font-weight:600}
+
+  /* 天气 */
+  .w-head{display:flex;align-items:flex-start;justify-content:space-between}
+  .t-h4{font-size:14px;font-weight:600;color:var(--ink);line-height:1.45}
+  .t-xs{font-size:10px;color:var(--faint)}
+  .t-sm{font-size:12px;color:var(--muted)}
+  .w-live{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:10px}
+  .w-main{display:flex;align-items:center;gap:9px}
+  .w-temp{font-size:38px;font-weight:800;line-height:1;color:var(--ink);letter-spacing:-1px}
+  .w-desc{display:flex;flex-direction:column;gap:3px}
+  .w-text{font-size:15px;font-weight:700;color:var(--brand)}
+  .w-chips{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+  .w-chip{padding:2px 8px;border-radius:var(--pill);background:var(--brand-tint-2);font-size:10px;color:#4e7b66}
+  .w-strip{display:flex;gap:5px;margin-top:11px;padding-top:9px;border-top:1px solid var(--line-soft);overflow:hidden}
+  .fc{flex:none;width:48px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0;border-radius:var(--r-md);background:#f8faf9}
+  .fc-week{font-size:9px;color:var(--muted)}
+  .fc-emoji{font-size:15px;line-height:1.2}
+  .fc-temp{font-size:10px;color:var(--ink);font-weight:600}
+  .fc-rain{font-size:9px;color:var(--info)}
+
+  /* 模式 */
+  .mode-grid{display:flex;flex-wrap:wrap;gap:8px;padding:0 12px}
+  .mode{width:calc(50% - 4px);padding:12px;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-card)}
+  .mode-emoji{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);background:var(--brand-tint);font-size:20px;margin-bottom:7px}
+  .mode-name{font-size:15px;font-weight:700;color:var(--ink)}
+  .mode-desc{margin-top:4px;font-size:11px;line-height:1.55;color:var(--muted)}
+  .mode-foot{margin-top:7px;padding-top:6px;border-top:1px solid var(--line-soft);font-size:11px;color:var(--brand-deep);font-weight:600;font-variant-numeric:tabular-nums}
+
+  /* 底部 tabBar */
+  .tabbar{height:78px;flex:none;border-top:1px solid var(--line-soft);background:#fff;display:flex;padding-bottom:16px}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;color:#8a9a93}
+  .tab img{width:27px;height:27px;display:block}
+  .tab.on{color:var(--brand);font-weight:600}
+
+  /* 发现 */
+  .filter{padding:10px 12px 8px;background:#fff;border-bottom:1px solid var(--line-soft)}
+  .search-row{display:flex;gap:8px}
+  .search{flex:1;height:38px;display:flex;align-items:center;gap:5px;padding:0 12px;border-radius:var(--pill);background:#f2f6f4}
+  .search .ic{font-size:15px;color:var(--faint)}
+  .search .ph{font-size:13px;color:var(--faint)}
+  .search-btn{flex:none;height:38px;padding:0 15px;display:flex;align-items:center;border-radius:var(--pill);background:var(--brand);color:#fff;font-size:13px;font-weight:600}
+  .cats{display:flex;gap:17px;margin-top:10px;padding-bottom:2px}
+  .cat{position:relative;padding:5px 2px 7px;font-size:14px;color:var(--muted)}
+  .cat.on{color:var(--ink);font-weight:700}
+  .cat.on::after{content:"";position:absolute;left:50%;bottom:1px;transform:translateX(-50%);width:20px;height:3px;border-radius:2px;background:var(--brand)}
+  .filter-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+  .pick{height:28px;padding:0 10px;display:flex;align-items:center;gap:3px;border-radius:var(--r-md);background:#f7f9f8;border:1px solid var(--line);font-size:11px;color:#55635c}
+  .tag-row{display:flex;gap:6px;margin-top:7px;overflow:hidden}
+  .tagchip{flex:none;height:24px;line-height:24px;padding:0 10px;border-radius:var(--pill);background:#fff;border:1px solid var(--line);font-size:11px;color:var(--muted)}
+  .tagchip.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+  .result-line{display:flex;align-items:baseline;justify-content:space-between;padding:10px 12px 2px;font-size:12px}
+  .result-line .n{color:var(--brand);font-weight:700}
+
+  .grid2{display:flex;flex-wrap:wrap;gap:8px;padding:6px 12px 0}
+  .poi{width:calc(50% - 4px);background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-card)}
+  .cover{position:relative;height:118px;background:linear-gradient(135deg,#cfe3d6,#a8cbb8)}
+  .cover .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(255,255,255,.9);letter-spacing:1px}
+  .cover-cat{position:absolute;left:6px;top:6px;padding:2px 7px;border-radius:var(--pill);background:rgba(255,255,255,.94);color:var(--brand-deep);font-size:9.5px;font-weight:600}
+  .cover-rate{position:absolute;right:6px;bottom:6px;padding:2px 6px;border-radius:var(--pill);background:rgba(20,33,28,.55);color:#fff;font-size:9.5px;font-weight:700}
+  .poi-body{padding:8px 9px 9px}
+  .poi-name{font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .poi-sub{margin-top:2px;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .poi-foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px;padding-top:5px;border-top:1px solid var(--line-soft)}
+  .price{color:var(--accent);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+
+  /* 定制 */
+  .step-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:11px}
+  .step{flex:none;width:22px;height:22px;border-radius:50%;background:var(--brand-tint);color:var(--brand-deep);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
+  .t-h3{font-size:16px;font-weight:700;color:var(--ink);line-height:1.4}
+  .opt{margin-left:6px;font-size:10px;font-weight:400;color:var(--brand)}
+  .m2-grid{display:flex;flex-wrap:wrap;gap:7px}
+  .m2{width:calc(50% - 4px);padding:10px;border:1px solid var(--line);border-radius:var(--r-lg);background:#fff}
+  .m2.on{border-color:var(--brand);background:var(--brand-tint-2);box-shadow:0 3px 9px rgba(47,125,92,.1)}
+  .m2-top{display:flex;align-items:center;justify-content:space-between}
+  .m2-e{font-size:20px;line-height:1.1}
+  .m2-check{width:17px;height:17px;border-radius:50%;background:var(--brand);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center}
+  .m2-n{margin-top:5px;font-size:13.5px;font-weight:700;color:var(--ink)}
+  .m2-c{margin-top:2px;font-size:10.5px;color:var(--brand-deep);font-variant-numeric:tabular-nums}
+  .mini-desc{margin-top:9px;padding-top:8px;border-top:1px solid var(--line-soft);font-size:11.5px;line-height:1.65;color:var(--muted)}
+  .day-row{display:flex;align-items:center;gap:5px;margin-bottom:12px}
+  .day-pick{flex:1;height:38px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);background:#f6f9f7;font-size:14px;font-weight:600;color:var(--body)}
+  .day-pick.on{background:var(--brand);color:#fff;box-shadow:0 3px 8px rgba(47,125,92,.24)}
+  .day-unit{font-size:12px;color:var(--muted);padding-left:2px}
+  .budget-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line-soft)}
+  .budget-label{font-size:13px;color:var(--body)}
+  .budget-box{display:flex;align-items:baseline;gap:2px;padding-bottom:3px;border-bottom:1px solid var(--brand)}
+  .budget-box .yen{font-size:13px;color:var(--brand);font-weight:600}
+  .budget-val{font-size:20px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+  .quick-row{display:flex;gap:6px;margin-top:8px}
+  .chip{height:30px;padding:0 13px;display:inline-flex;align-items:center;border-radius:var(--pill);background:#f2f6f4;font-size:13px;color:var(--body);border:1px solid transparent}
+  .chip.on{background:var(--brand-tint);color:var(--brand-deep);border-color:var(--brand);font-weight:600}
+  .chip.sm{height:26px;padding:0 10px;font-size:11.5px}
+
+  .est{padding:12px;border-radius:var(--r-lg);border:1px solid #c6e6d3;background:#f2fbf6}
+  .est-head{display:flex;align-items:flex-start;justify-content:space-between}
+  .est-total{margin-top:2px;font-size:26px;font-weight:800;color:var(--ink);line-height:1.1;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+  .badge{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:var(--pill);font-size:10px;font-weight:600}
+  .badge-ok{background:#e7f6ee;color:#24864f}
+  .badge-warn{background:#fff2df;color:#9a5a13}
+  .badge-line{background:transparent;border:1px solid var(--line);color:var(--muted)}
+  .est-rows{display:flex;flex-wrap:wrap;margin:9px 0 7px}
+  .est-cell{width:33.33%;display:flex;flex-direction:column;gap:1px;padding:3px 0}
+  .est-cell .k{font-size:10px;color:var(--muted)}
+  .est-v{font-size:12px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+  .bar{height:7px;border-radius:var(--pill);background:#e7ece9;overflow:hidden}
+  .bar-fill{height:100%;border-radius:var(--pill);background:var(--ok)}
+  .est-status{margin-top:7px;font-size:12.5px;font-weight:600;color:var(--ink)}
+  .bottom-bar{flex:none;display:flex;align-items:center;gap:10px;padding:9px 12px;background:#fff;border-top:1px solid var(--line);box-shadow:0 -4px 12px rgba(20,33,28,.06)}
+  .bb-num{font-size:20px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.1}
+  .bb-mid{flex:1;display:flex;flex-direction:column;gap:4px}
+  .bb-track{height:5px;border-radius:var(--pill);background:#e9eeeb;overflow:hidden}
+  .bb-btn{flex:none;width:116px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:var(--pill);background:linear-gradient(135deg,var(--brand),#3d9470);color:#fff;font-size:14px;font-weight:600;box-shadow:var(--sh-brand)}
+
+  /* 行程 */
+  .trip-hero{padding:16px 12px 18px;border-radius:0 0 14px 14px;color:#fff;
+    background:radial-gradient(110% 70% at 90% 0%,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 60%),
+               linear-gradient(150deg,#1f6b4f 0%,#2f7d5c 55%,#479b76 100%)}
+  .th-top{display:flex;align-items:center;justify-content:space-between}
+  .th-mode{font-size:20px;font-weight:800;letter-spacing:.5px}
+  .th-pill{padding:3px 9px;border-radius:var(--pill);background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);font-size:10px}
+  .th-money{display:flex;align-items:flex-end;gap:14px;margin-top:13px}
+  .th-k{font-size:10px;color:rgba(255,255,255,.72)}
+  .th-v{font-size:28px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+  .th-track{height:5px;border-radius:var(--pill);background:rgba(255,255,255,.24);overflow:hidden;margin-top:4px}
+  .th-fill{height:100%;border-radius:var(--pill);background:#d8f5e5}
+  .th-pct{font-size:10px;color:rgba(255,255,255,.82);text-align:right;margin-top:3px}
+  .th-line{margin-top:7px;font-size:11px;color:rgba(255,255,255,.86)}
+
+  .preset{margin:0 12px 12px;padding:16px;border-radius:var(--r-lg);border:1px solid #dcebe2;
+    background:linear-gradient(160deg,#f4faf7 0%,#fff 70%)}
+  .preset-top{display:flex;align-items:center;justify-content:space-between}
+  .preset-eyebrow{font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--brand)}
+  .preset-title{margin:5px 0 3px;font-size:16px;font-weight:700;color:#1d4b36}
+  .preset-actions{display:flex;gap:8px;margin-top:9px}
+  .btn-sm{height:30px;padding:0 12px;display:flex;align-items:center;justify-content:center;border-radius:var(--pill);font-size:11.5px;font-weight:600}
+  .ghost{background:#fff;color:var(--brand);border:1px solid rgba(47,125,92,.45)}
+  .soft{background:var(--brand-tint);color:var(--brand-deep)}
+
+  .wstrip{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 12px 12px;padding:10px 12px;border-radius:var(--r-lg);
+    background:linear-gradient(110deg,#eef7f1 0%,#f8fbf9 60%,#fff8ec 100%);border:1px solid #e2efe7}
+  .ws-temp{font-size:24px;font-weight:800;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums}
+  .ws-desc{font-size:12px;font-weight:600;color:#245c42}
+
+  .map-card{margin:0 12px 12px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-card)}
+  .map{position:relative;height:150px;border-radius:var(--r-md);overflow:hidden;margin-top:8px;
+    background:
+      radial-gradient(circle at 20% 30%,#e8f0e9 0%,transparent 45%),
+      radial-gradient(circle at 78% 68%,#e6f0ea 0%,transparent 42%),
+      linear-gradient(0deg,#eef4ef,#f3f7f4)}
+  .map .grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(47,125,92,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(47,125,92,.06) 1px,transparent 1px);background-size:26px 26px}
+  .map svg{position:absolute;inset:0;width:100%;height:100%}
+  .map-note{position:absolute;right:8px;bottom:6px;font-size:9px;color:#8a9a93}
+
+  .day-tabs{display:flex;gap:6px;padding:8px 12px;background:rgba(244,247,245,.96)}
+  .day-tab{height:28px;padding:0 12px;display:flex;align-items:center;border-radius:var(--pill);background:#fff;border:1px solid var(--line);font-size:11.5px;font-weight:600;color:var(--muted)}
+  .day-tab.on{background:var(--brand);border-color:var(--brand);color:#fff}
+
+  .day-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .day-left{display:flex;align-items:center;gap:7px;flex:1;min-width:0}
+  .day-tag{flex:none;padding:3px 7px;border-radius:var(--r-sm);background:var(--brand);color:#fff;font-size:10px;font-weight:700}
+  .day-theme{font-size:13.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .day-redrop{flex:none;height:26px;padding:0 10px;display:flex;align-items:center;border-radius:var(--pill);border:1px solid rgba(47,125,92,.4);color:var(--brand);font-size:10.5px;font-weight:600}
+
+  .tl-row{display:flex;gap:5px}
+  .tl-time{flex:none;width:44px;padding-top:9px}
+  .tl-start{font-size:11.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+  .tl-dur{font-size:9px;color:var(--faint);display:block;margin-top:1px}
+  .tl-rail{flex:none;width:10px;display:flex;flex-direction:column;align-items:center;padding-top:13px}
+  .tl-dot{width:7px;height:7px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 3px rgba(47,125,92,.1)}
+  .tl-line{flex:1;width:1px;background:var(--line);margin-top:4px}
+  .tl-card{flex:1;min-width:0;display:flex;align-items:center;gap:8px;padding:7px;margin:4px 0;border-radius:var(--r-md);background:#fbfcfb;border:1px solid var(--line-soft)}
+  .tl-thumb{width:54px;height:41px;border-radius:var(--r-sm);flex:none;background:linear-gradient(135deg,#cfe3d6,#a8cbb8);display:flex;align-items:center;justify-content:center;font-size:17px}
+  .tl-name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tl-sub{margin-top:2px;font-size:10px;color:var(--muted)}
+  .tl-lock{flex:none;padding:1px 5px;border-radius:var(--r-sm);background:#fff2df;color:#9a5a13;font-size:9px}
+
+  .narr{margin:0 0 7px 59px;padding:7px 8px;border-radius:var(--r-md);background:#f4faf7;border-left:3px solid var(--brand)}
+  .narr-head{display:flex;align-items:center;justify-content:space-between;gap:6px}
+  .narr-title{flex:1;font-size:11.5px;font-weight:600;color:#245c42;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .narr-toggle{flex:none;font-size:10px;color:var(--brand)}
+  .narr-text{margin-top:5px;font-size:11px;line-height:1.75;color:var(--body)}
+  .narr-task{margin-top:6px;padding:7px;border-radius:var(--r-sm);background:#fff8ec}
+  .task-label{font-size:9px;font-weight:700;color:#9a5a13}
+  .task-title{display:block;font-size:11.5px;font-weight:600;color:var(--ink);margin-top:1px}
+
+  /* 对比 */
+  .form-row{display:flex;gap:7px;margin-top:12px}
+  .field{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .field-label{font-size:10px;color:var(--muted)}
+  .field-box{height:38px;display:flex;align-items:center;justify-content:space-between;gap:3px;padding:0 9px;border-radius:var(--r-md);background:#f6f9f7;border:1px solid var(--line);font-size:13px;color:var(--ink)}
+  .caret{font-size:9px;color:var(--faint)}
+  .sum-list{margin-top:7px;display:flex;flex-direction:column;gap:5px}
+  .sum-item{display:flex;align-items:center;gap:7px}
+  .sum-dot{flex:none;width:16px;height:16px;border-radius:50%;background:var(--brand-tint);color:var(--brand-deep);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .sum-text{font-size:12px;color:var(--body)}
+  .modes{display:flex;gap:7px;padding:2px 12px 6px;overflow:hidden}
+  .mcard{flex:none;width:82px;padding:8px;border-radius:var(--r-lg);background:#fff;border:1px solid var(--line);box-shadow:var(--sh-card)}
+  .mcard.on{border-color:var(--brand);background:var(--brand-tint-2);border-width:2px}
+  .mc-name{font-size:12px;font-weight:600;color:var(--ink);display:block;margin-top:2px}
+  .mc-cost{font-size:14px;font-weight:800;color:var(--brand-deep);font-variant-numeric:tabular-nums}
+  .mc-bar{height:4px;border-radius:var(--pill);background:#e9eeeb;overflow:hidden;margin-top:3px}
+  .mc-fill{height:100%;border-radius:var(--pill);background:var(--brand-mid)}
+  .metrics{display:flex;margin-top:10px;padding:9px 0;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
+  .metric{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .metric-v{font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+  .d-day{padding:7px 0;border-bottom:1px dashed var(--line)}
+  .d-day:last-child{border-bottom:none}
+  .d-day-head{display:flex;align-items:center;gap:6px}
+  .d-day-tag{flex:none;padding:1px 6px;border-radius:var(--r-sm);background:var(--brand-tint);color:var(--brand-deep);font-size:9px;font-weight:700}
+  .d-day-theme{font-size:12px;font-weight:600;color:var(--ink)}
+  .d-day-pois{margin-top:3px;font-size:10.5px;line-height:1.65;color:var(--muted)}
+  .btn-primary{height:44px;display:flex;align-items:center;justify-content:center;border-radius:var(--pill);background:linear-gradient(135deg,var(--brand),#3d9470);color:#fff;font-size:14.5px;font-weight:600;box-shadow:var(--sh-brand)}
+
+  /* 我的 */
+  .profile{display:flex;align-items:center;gap:11px;margin:12px;padding:14px;border-radius:var(--r-xl);
+    background:radial-gradient(120% 90% at 100% 0%,rgba(255,255,255,.2) 0%,rgba(255,255,255,0) 60%),
+               linear-gradient(145deg,#1f6b4f 0%,#2f7d5c 60%,#479b76 100%);box-shadow:0 6px 15px rgba(20,63,45,.22)}
+  .p-avatar{width:52px;height:52px;flex:none;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:26px}
+  .p-name{font-size:17px;font-weight:700;color:#fff}
+  .p-sub{margin-top:3px;font-size:10.5px;color:rgba(255,255,255,.82)}
+  .p-quit{flex:none;padding:4px 10px;border-radius:var(--pill);border:1px solid rgba(255,255,255,.5);color:#fff;font-size:10.5px}
+  .trip{display:flex;align-items:center;gap:8px;padding:11px 0;border-bottom:1px solid var(--line-soft)}
+  .trip:last-child{border-bottom:none}
+  .trip-name{font-size:13.5px;font-weight:700;color:var(--ink)}
+  .trip-bar{height:4px;margin-top:6px;border-radius:var(--pill);background:#eef2f0;overflow:hidden}
+  .trip-fill{height:100%;border-radius:var(--pill);background:linear-gradient(90deg,var(--brand-mid),var(--brand))}
+  .trip-del{flex:none;padding:4px 8px;border-radius:var(--pill);color:#b23a2f;font-size:10.5px;background:#fdeceb}
+  .link{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line-soft);font-size:13px;color:var(--body)}
+  .link:last-of-type{border-bottom:none}
+  .link-a{font-size:15px;color:var(--faint)}
+</style>
+</head>
+<body>
+  <div class="board-head">
+    <div>
+      <h1>花溪旅行 · 微信小程序 UI</h1>
+      <p>青绿主色（花溪河水）+ 纸白底 + 一点暖橙。卡片靠 1px 描边与极浅投影分层，全站 4 档圆角、4px 栅格、三档阴影。<br />
+      以下六屏与实际 WXSS 同一套令牌渲染，rpx 按 2:1 折算为 px。</p>
+    </div>
+    <div class="legend">
+      <span><i style="background:#2f7d5c"></i>brand #2F7D5C</span>
+      <span><i style="background:#d97734"></i>accent #D97734</span>
+      <span><i style="background:#14211c"></i>ink #14211C</span>
+      <span><i style="background:#f4f7f5;border:1px solid #e6ede9"></i>bg #F4F7F5</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- ============ 1 首页 ============ -->
+    <div class="frame-wrap">
+      <div class="cap"><b>01 首页</b><span>头图 + 浮起数据条 + 天气 + 模式 + 精选横滑</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="navbar">花溪旅行<span class="capsule">··· ｜ ◎</span></div>
+        <div class="body">
+          <div class="hero">
+            <div class="hero-top">
+              <div class="brand-mark"><span class="bm-dot"></span>花溪旅行</div>
+              <div class="hero-badge">贵阳 · 花溪区</div>
+            </div>
+            <div class="hero-title">把花溪，玩成<span class="hero-hl">你想要的模样</span></div>
+            <div class="hero-sub">选一种旅行方式，填好天数与预算，系统自动排好每日路线、餐食与住宿。</div>
+            <div class="hero-actions">
+              <div class="ha ha-primary">开始定制 →</div>
+              <div class="ha ha-ghost">四模式对比</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat"><span class="stat-n">88</span><span class="stat-l">本地资源点</span></div>
+            <div class="stat-div"></div>
+            <div class="stat"><span class="stat-n">4</span><span class="stat-l">旅行模式</span></div>
+            <div class="stat-div"></div>
+            <div class="stat"><span class="stat-n">8</span><span class="stat-l">权重维度</span></div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <div class="w-head">
+              <div>
+                <div class="t-h4">出行前，先看实时天气</div>
+                <div class="t-xs" style="margin-top:2px">花溪区 · 实况与未来 15 天</div>
+              </div>
+              <span class="t-xs" style="letter-spacing:1px">Open-Meteo</span>
+            </div>
+            <div class="w-live">
+              <div class="w-main">
+                <span class="w-temp">16°</span>
+                <div class="w-desc"><span class="w-text">阴</span><span class="t-xs">体感 14° · 湿度 78%</span></div>
+              </div>
+              <div class="w-chips">
+                <span class="w-chip">东北风 2级</span>
+                <span class="w-chip">云量 92%</span>
+                <span class="w-chip">降水 0.3mm</span>
+              </div>
+            </div>
+            <div class="w-strip">
+              <div class="fc"><span class="fc-week">周三</span><span class="fc-emoji">☁️</span><span class="fc-temp">16°<span style="color:#b7c2bd">7°</span></span><span class="fc-rain">76%</span></div>
+              <div class="fc"><span class="fc-week">周四</span><span class="fc-emoji">🌧️</span><span class="fc-temp">14°<span style="color:#b7c2bd">9°</span></span><span class="fc-rain">88%</span></div>
+              <div class="fc"><span class="fc-week">周五</span><span class="fc-emoji">⛅</span><span class="fc-temp">18°<span style="color:#b7c2bd">10°</span></span><span class="fc-rain">32%</span></div>
+              <div class="fc"><span class="fc-week">周六</span><span class="fc-emoji">☀️</span><span class="fc-temp">21°<span style="color:#b7c2bd">11°</span></span><span class="fc-rain">8%</span></div>
+              <div class="fc"><span class="fc-week">周日</span><span class="fc-emoji">☀️</span><span class="fc-temp">22°<span style="color:#b7c2bd">12°</span></span><span class="fc-rain">5%</span></div>
+              <div class="fc"><span class="fc-week">周一</span><span class="fc-emoji">⛅</span><span class="fc-temp">19°<span style="color:#b7c2bd">10°</span></span><span class="fc-rain">21%</span></div>
+            </div>
+          </div>
+
+          <div class="sec-head">
+            <div>
+              <div class="sec-title">选择旅行方式</div>
+              <div class="sec-sub">同一组需求，四种节奏</div>
+            </div>
+            <span class="sec-more">并排对比 ›</span>
+          </div>
+          <div class="mode-grid">
+            <div class="mode">
+              <div class="mode-emoji">🌿</div>
+              <div class="mode-name">休闲游</div>
+              <div class="mode-desc">慢节奏亲水休闲，少走路多停留</div>
+              <div class="mode-foot">2 天 ≈ ¥980</div>
+            </div>
+            <div class="mode">
+              <div class="mode-emoji">⚡</div>
+              <div class="mode-name">特种兵游</div>
+              <div class="mode-desc">免费高分景点全串起来，快餐快速补给</div>
+              <div class="mode-foot">2 天 ≈ ¥430</div>
+            </div>
+          </div>
+          <div style="height:8px"></div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab on"><img src="../travel-miniapp/assets/tabbar/home-on.png" alt="" />首页</div>
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/discover.png" alt="" />发现</div>
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/plan.png" alt="" />定制</div>
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/mine.png" alt="" />我的</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 2 发现 ============ -->
+    <div class="frame-wrap">
+      <div class="cap"><b>02 发现花溪</b><span>吸顶筛选 + 双列卡片 + 评分/价格悬浮</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="navbar">发现花溪<span class="capsule">··· ｜ ◎</span></div>
+        <div class="body" style="overflow:hidden">
+          <div class="filter">
+            <div class="search-row">
+              <div class="search"><span class="ic">⌕</span><span class="ph">搜索名称 / 地址</span></div>
+              <div class="search-btn">搜索</div>
+            </div>
+            <div class="cats">
+              <span class="cat">全部</span>
+              <span class="cat on">景点</span>
+              <span class="cat">美食</span>
+              <span class="cat">住宿</span>
+              <span class="cat">休闲</span>
+            </div>
+            <div class="filter-row">
+              <span class="pick">4.5 分以上 <span class="caret">▾</span></span>
+              <span class="pick">不限价格 <span class="caret">▾</span></span>
+              <span class="pick">地图</span>
+              <span class="pick" style="color:#2f7d5c;background:#f4faf7;border-color:#dcebe2">重置</span>
+            </div>
+            <div class="tag-row">
+              <span class="tagchip on">自然风光</span>
+              <span class="tagchip">历史人文</span>
+              <span class="tagchip">出片打卡</span>
+              <span class="tagchip">亲子友好</span>
+            </div>
+          </div>
+
+          <div class="result-line">
+            <span class="t-sm">共 <span class="n">22</span> 条资源</span>
+            <span class="t-xs">景点</span>
+          </div>
+
+          <div class="grid2">
+            <div class="poi">
+              <div class="cover"><div class="ph">青岩古镇</div>
+                <span class="cover-cat">景点</span><span class="cover-rate">4.7</span></div>
+              <div class="poi-body">
+                <div class="poi-name">青岩古镇</div>
+                <div class="poi-sub">古镇 · 约 210 分钟</div>
+                <div class="poi-foot"><span class="price">¥30</span><span class="t-xs">历史人文</span></div>
+              </div>
+            </div>
+            <div class="poi">
+              <div class="cover"><div class="ph">十里河滩</div>
+                <span class="cover-cat">景点</span><span class="cover-rate">4.7</span></div>
+              <div class="poi-body">
+                <div class="poi-name">十里河滩国家城市湿地公园</div>
+                <div class="poi-sub">湿地步道 · 约 150 分钟</div>
+                <div class="poi-foot"><span class="price">免费</span><span class="t-xs">自然风光</span></div>
+              </div>
+            </div>
+            <div class="poi">
+              <div class="cover"><div class="ph">夜郎谷</div>
+                <span class="cover-cat">景点</span><span class="cover-rate">4.6</span></div>
+              <div class="poi-body">
+                <div class="poi-name">花溪夜郎谷</div>
+                <div class="poi-sub">艺术地貌 · 约 150 分钟</div>
+                <div class="poi-foot"><span class="price">¥20</span><span class="t-xs">出片打卡</span></div>
+              </div>
+            </div>
+            <div class="poi">
+              <div class="cover"><div class="ph">花溪公园</div>
+                <span class="cover-cat">景点</span><span class="cover-rate">4.6</span></div>
+              <div class="poi-body">
+                <div class="poi-name">花溪公园</div>
+                <div class="poi-sub">城市山水 · 约 120 分钟</div>
+                <div class="poi-foot"><span class="price">免费</span><span class="t-xs">自然风光</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center;padding:14px 0;font-size:11px;color:#b7c2bd">上滑查看更多</div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/home.png" alt="" />首页</div>
+          <div class="tab on"><img src="../travel-miniapp/assets/tabbar/discover-on.png" alt="" />发现</div>
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/plan.png" alt="" />定制</div>
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/mine.png" alt="" />我的</div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 3 定制 ============ -->
+    <div class="frame-wrap">
+      <div class="cap"><b>03 定制行程</b><span>五段式表单 + 常驻底部结算条</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="navbar">定制行程<span class="capsule">··· ｜ ◎</span></div>
+        <div class="body">
+          <div style="padding:12px 0 0">
+            <div class="card">
+              <div class="step-head">
+                <div class="step">1</div>
+                <div>
+                  <div class="t-h3">选择旅行模式</div>
+                  <div class="t-xs" style="margin-top:2px">选一种方式，每一档开销都能在下面单独调</div>
+                </div>
+              </div>
+              <div class="m2-grid">
+                <div class="m2 on">
+                  <div class="m2-top"><span class="m2-e">🌿</span><span class="m2-check">✓</span></div>
+                  <div class="m2-n">休闲游</div>
+                  <div class="m2-c">≈ ¥980</div>
+                </div>
+                <div class="m2">
+                  <div class="m2-top"><span class="m2-e">⚡</span></div>
+                  <div class="m2-n">特种兵游</div>
+                  <div class="m2-c">≈ ¥430</div>
+                </div>
+                <div class="m2">
+                  <div class="m2-top"><span class="m2-e">✨</span></div>
+                  <div class="m2-n">高端游</div>
+                  <div class="m2-c">≈ ¥2,860</div>
+                </div>
+                <div class="m2">
+                  <div class="m2-top"><span class="m2-e">📸</span></div>
+                  <div class="m2-n">打卡游</div>
+                  <div class="m2-c">≈ ¥1,120</div>
+                </div>
+              </div>
+              <div class="mini-desc">慢节奏亲水休闲，少走路多停留</div>
+            </div>
+
+            <div class="card">
+              <div class="step-head">
+                <div class="step">2</div>
+                <div>
+                  <div class="t-h3">天数与预算</div>
+                  <div class="t-xs" style="margin-top:2px">预算按人均计，含门票、餐饮、住宿分摊</div>
+                </div>
+              </div>
+              <div class="day-row">
+                <div class="day-pick">1</div>
+                <div class="day-pick on">2</div>
+                <div class="day-pick">3</div>
+                <div class="day-pick">4</div>
+                <div class="day-pick">5</div>
+                <div class="day-pick">6</div>
+                <div class="day-pick">7</div>
+                <span class="day-unit">天</span>
+              </div>
+              <div class="budget-row">
+                <span class="budget-label">人均预算</span>
+                <span class="budget-box"><span class="yen">¥</span><span class="budget-val">1200</span></span>
+              </div>
+              <div class="quick-row">
+                <span class="chip sm">¥300</span>
+                <span class="chip sm">¥800</span>
+                <span class="chip sm on">¥1500</span>
+                <span class="chip sm">¥3000</span>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="step-head">
+                <div class="step">3</div>
+                <div>
+                  <div class="t-h3">出行人群</div>
+                  <div class="t-xs" style="margin-top:2px">影响餐厅与住宿的推荐口径</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <span class="chip on">情侣 / 朋友</span>
+                <span class="chip">家庭亲子</span>
+                <span class="chip">独自出行</span>
+                <span class="chip">团队出行</span>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="step-head">
+                <div class="step">4</div>
+                <div>
+                  <div class="t-h3">旅行偏好<span class="opt">可选</span></div>
+                  <div class="t-xs" style="margin-top:2px">只作用于景点与休闲点</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <span class="chip sm on">自然风光</span>
+                <span class="chip sm">历史人文</span>
+                <span class="chip sm">出片打卡</span>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="step-head" style="margin-bottom:0">
+                <div class="step">5</div>
+                <div style="flex:1">
+                  <div class="t-h3">开销微调<span class="opt">收起</span></div>
+                  <div class="t-xs" style="margin-top:2px">住宿 / 餐饮 / 交通 / 晚间与节奏都会计入开销</div>
+                </div>
+              </div>
+              <div class="est" style="margin-top:12px">
+                <div class="est-head">
+                  <div>
+                    <div class="k" style="font-size:10px;color:#8a9a93">整体开销预估</div>
+                    <div class="est-total">¥ 1,146</div>
+                  </div>
+                  <span class="badge badge-ok">预算内 · 96%</span>
+                </div>
+                <div class="est-rows">
+                  <div class="est-cell"><span class="k">🏨 住宿</span><span class="est-v">¥260</span></div>
+                  <div class="est-cell"><span class="k">🍽 餐饮</span><span class="est-v">¥240</span></div>
+                  <div class="est-cell"><span class="k">🎫 门票</span><span class="est-v">¥360</span></div>
+                  <div class="est-cell"><span class="k">🚌 交通</span><span class="est-v">¥40</span></div>
+                  <div class="est-cell"><span class="k">🌙 晚间</span><span class="est-v">¥0</span></div>
+                </div>
+                <div class="bar"><div class="bar-fill" style="width:96%"></div></div>
+                <div class="est-status">整体开销约 ¥1146，在预算内（占 96%）</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-bar">
+          <div>
+            <div class="t-xs">整体开销</div>
+            <div class="bb-num">¥1,146</div>
+          </div>
+          <div class="bb-mid">
+            <div class="bb-track"><div class="bar-fill" style="width:96%"></div></div>
+            <span class="t-xs">预算内 · 预算 ¥1200</span>
+          </div>
+          <div class="bb-btn">生成行程</div>
+        </div>
+        <div class="tabbar" style="height:64px;padding-bottom:10px">
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/home.png" alt="" />首页</div>
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/discover.png" alt="" />发现</div>
+          <div class="tab on"><img src="../travel-miniapp/assets/tabbar/plan-on.png" alt="" />定制</div>
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/mine.png" alt="" />我的</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:26px">
+    <!-- ============ 4 行程 ============ -->
+    <div class="frame-wrap">
+      <div class="cap"><b>04 行程详情</b><span>总览 + 游学横幅 + 地图 + 时间轴（讲解可展开）</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="navbar">我的行程<span class="capsule">··· ｜ ◎</span></div>
+        <div class="body">
+          <div class="trip-hero">
+            <div class="th-top">
+              <span class="th-mode">打卡游</span>
+              <span class="th-pill">1 天 · 1 日行程</span>
+            </div>
+            <div class="th-money">
+              <div>
+                <div class="th-k">预估花费</div>
+                <div class="th-v">¥ 726</div>
+              </div>
+              <div style="flex:1;padding-bottom:4px">
+                <div class="th-k">人均预算 ¥800</div>
+                <div class="th-track"><div class="th-fill" style="width:91%"></div></div>
+                <div class="th-pct">91%</div>
+              </div>
+            </div>
+            <div class="th-line">🏨 亚朵酒店(花溪公园店) × 0 晚</div>
+            <div class="th-line">📅 出行日期 2026-11-11</div>
+          </div>
+
+          <div class="preset">
+            <div class="preset-top">
+              <span class="preset-eyebrow">预设主题路线</span>
+              <span class="badge badge-ok">按日期校验通过</span>
+            </div>
+            <div class="preset-title">百年贵大 · 溪山校园游学线</div>
+            <div class="t-xs">建筑遗产 + 校史 + 生态辨识，全程步行约 4 小时</div>
+            <div class="preset-actions">
+              <div class="btn-sm ghost">查看完整游学线</div>
+              <div class="btn-sm soft">设置出行提醒</div>
+            </div>
+          </div>
+
+          <div class="wstrip">
+            <div style="display:flex;align-items:center;gap:7px">
+              <span class="ws-temp">16°</span>
+              <div><div class="ws-desc">花溪 · 阴</div><div class="t-xs">东北风 2级</div></div>
+            </div>
+            <div style="display:flex;gap:9px">
+              <div style="text-align:center"><div class="t-xs">周三</div><div class="t-xs" style="color:#3d4a44;font-size:10px">16°/7°</div></div>
+              <div style="text-align:center"><div class="t-xs">周四</div><div class="t-xs" style="color:#3d4a44;font-size:10px">14°/9°</div></div>
+              <div style="text-align:center"><div class="t-xs">周五</div><div class="t-xs" style="color:#3d4a44;font-size:10px">18°/10°</div></div>
+            </div>
+          </div>
+
+          <div class="map-card">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span class="t-h4">路线地图</span>
+              <div style="display:flex;gap:5px">
+                <span class="day-tab on" style="height:22px;padding:0 8px;font-size:10px">D1</span>
+              </div>
+            </div>
+            <div class="map">
+              <div class="grid-lines"></div>
+              <svg viewBox="0 0 320 150" preserveAspectRatio="none">
+                <!-- 水系与绿地：只做氛围，不指代真实地理 -->
+                <path d="M-10,118 C40,104 70,128 110,116 C150,104 176,128 214,120 C254,112 286,126 330,116 L330,160 L-10,160 Z" fill="#dcebe4" opacity=".85"/>
+                <ellipse cx="70" cy="52" rx="46" ry="26" fill="#e4efe7" opacity=".9"/>
+                <ellipse cx="238" cy="96" rx="52" ry="28" fill="#e4efe7" opacity=".9"/>
+                <!-- 行程连线 -->
+                <path d="M34,112 C46,92 62,84 86,84 C112,84 124,100 142,96 C164,91 178,70 196,62 C214,54 236,66 258,78"
+                      fill="none" stroke="#2f7d5c" stroke-width="3" stroke-linecap="round" opacity=".9"/>
+                <circle cx="34" cy="112" r="5" fill="#2f7d5c" stroke="#fff" stroke-width="2"/>
+                <circle cx="86" cy="84" r="5" fill="#2f7d5c" stroke="#fff" stroke-width="2"/>
+                <circle cx="142" cy="96" r="5" fill="#2f7d5c" stroke="#fff" stroke-width="2"/>
+                <circle cx="196" cy="62" r="5" fill="#2f7d5c" stroke="#fff" stroke-width="2"/>
+                <circle cx="258" cy="78" r="5" fill="#e6803a" stroke="#fff" stroke-width="2"/>
+              </svg>
+              <span class="map-note">位置示意</span>
+            </div>
+          </div>
+
+          <div class="day-tabs">
+            <span class="day-tab on">Day 1</span>
+            <span class="day-tab">Day 2</span>
+            <span class="day-tab">Day 3</span>
+          </div>
+
+          <div class="card" style="padding:14px 14px 8px">
+            <div class="day-head">
+              <div class="day-left">
+                <span class="day-tag" style="background:#2f7d5c">D1</span>
+                <div style="min-width:0">
+                  <div class="day-theme">青岩古镇 + 花溪公园</div>
+                  <div class="t-xs">6 个安排 · 当日 ¥726 / 预算 ¥800</div>
+                </div>
+              </div>
+              <span class="day-redrop">换一批</span>
+            </div>
+
+            <div style="margin-top:6px">
+              <div class="tl-row">
+                <div class="tl-time"><span class="tl-start">09:00</span><span class="tl-dur">20′</span></div>
+                <div class="tl-rail"><span class="tl-dot"></span><span class="tl-line"></span></div>
+                <div class="tl-card">
+                  <div class="tl-thumb">🎓</div>
+                  <div style="flex:1;min-width:0">
+                    <div class="tl-name">西校区主门 → 明德广场 <span class="tl-lock">锁定</span></div>
+                    <div class="tl-sub">上午 · ¥0</div>
+                  </div>
+                </div>
+              </div>
+              <div class="narr">
+                <div class="narr-head">
+                  <span class="narr-title">🎓 校园规划轴线与入学庆典</span>
+                  <span class="narr-toggle">收起</span>
+                </div>
+                <div class="narr-text">从主门沿中轴线步入明德广场，先看清校园的「一条轴线、两翼展开」格局：广场喷泉与两侧教学楼构成入学庆典的核心场景。</div>
+                <div class="narr-task">
+                  <span class="task-label">研学任务</span>
+                  <span class="task-title">校徽寻宝</span>
+                </div>
+              </div>
+
+              <div class="tl-row">
+                <div class="tl-time"><span class="tl-start">10:10</span><span class="tl-dur">40′</span></div>
+                <div class="tl-rail"><span class="tl-dot"></span><span class="tl-line"></span></div>
+                <div class="tl-card">
+                  <div class="tl-thumb">🌊</div>
+                  <div style="flex:1;min-width:0">
+                    <div class="tl-name">西校区图书馆 · 阅湖 <span class="tl-lock">锁定</span></div>
+                    <div class="tl-sub">上午 · ¥0</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tl-row">
+                <div class="tl-time"><span class="tl-start">12:30</span><span class="tl-dur">60′</span></div>
+                <div class="tl-rail"><span class="tl-dot" style="background:#e6803a"></span><span class="tl-line"></span></div>
+                <div class="tl-card">
+                  <div class="tl-thumb" style="background:linear-gradient(135deg,#f0d0b4,#dcae86);font-size:17px">🍜</div>
+                  <div style="flex:1;min-width:0">
+                    <div class="tl-name">青岩状元蹄(南门老字号店)</div>
+                    <div class="tl-sub">午餐 · ¥65</div>
+                  </div>
+                </div>
+              </div>
+              <div class="tl-row">
+                <div class="tl-time"><span class="tl-start">14:00</span><span class="tl-dur">210′</span></div>
+                <div class="tl-rail"><span class="tl-dot"></span></div>
+                <div class="tl-card" style="margin-bottom:10px">
+                  <div class="tl-thumb">🏯</div>
+                  <div style="flex:1;min-width:0">
+                    <div class="tl-name">青岩古镇</div>
+                    <div class="tl-sub">下午 · ¥30</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 5 对比 ============ -->
+    <div class="frame-wrap">
+      <div class="cap"><b>05 四模式对比</b><span>一张表说不清，就做成「小卡切换 + 单卡详情」</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="navbar">四种模式对比<span class="capsule">··· ｜ ◎</span></div>
+        <div class="body">
+          <div style="padding:12px 0 0">
+            <div class="card">
+              <div class="t-h3">同一组需求，四种模式</div>
+              <div class="t-xs" style="margin-top:2px">并排对比算法输出，看权重差异如何改变节奏与花费</div>
+              <div class="form-row">
+                <div class="field"><span class="field-label">天数</span><div class="field-box">2 天 <span class="caret">▾</span></div></div>
+                <div class="field"><span class="field-label">人均预算</span><div class="field-box"><span style="color:#2f7d5c">¥</span><span style="flex:1;text-align:right">1200</span></div></div>
+                <div class="field"><span class="field-label">人群</span><div class="field-box">情侣/朋友 <span class="caret">▾</span></div></div>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:11px;flex-wrap:wrap">
+                <span class="chip sm">自然风光</span>
+                <span class="chip sm">历史人文</span>
+                <span class="chip sm">出片打卡</span>
+              </div>
+              <div class="btn-primary" style="margin-top:13px">开始对比</div>
+            </div>
+
+            <div class="card">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span class="t-h4">一眼看懂差异</span>
+                <span class="badge badge-line">不落库</span>
+              </div>
+              <div class="sum-list">
+                <div class="sum-item"><span class="sum-dot">1</span><span class="sum-text">最省钱：特种兵游（¥431）</span></div>
+                <div class="sum-item"><span class="sum-dot">2</span><span class="sum-text">节奏最满：特种兵游（日均 6 个点）</span></div>
+                <div class="sum-item"><span class="sum-dot">3</span><span class="sum-text">免费点最多：特种兵游（占比 62%）</span></div>
+                <div class="sum-item"><span class="sum-dot">4</span><span class="sum-text">预算用得最足：高端游（98%）</span></div>
+              </div>
+            </div>
+
+            <div class="modes">
+              <div class="mcard on">
+                <span style="font-size:15px">🌿</span>
+                <span class="mc-name">休闲游</span>
+                <span class="mc-cost">¥593</span>
+                <div class="mc-bar"><div class="mc-fill" style="width:49%"></div></div>
+              </div>
+              <div class="mcard">
+                <span style="font-size:15px">⚡</span>
+                <span class="mc-name">特种兵游</span>
+                <span class="mc-cost">¥431</span>
+                <div class="mc-bar"><div class="mc-fill" style="width:36%"></div></div>
+              </div>
+              <div class="mcard">
+                <span style="font-size:15px">✨</span>
+                <span class="mc-name">高端游</span>
+                <span class="mc-cost">¥1,176</span>
+                <div class="mc-bar"><div class="mc-fill" style="width:98%"></div></div>
+              </div>
+              <div class="mcard">
+                <span style="font-size:15px">📸</span>
+                <span class="mc-name">打卡游</span>
+                <span class="mc-cost">¥742</span>
+                <div class="mc-bar"><div class="mc-fill" style="width:62%"></div></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div style="display:flex;align-items:start;justify-content:space-between;gap:8px">
+                <div style="display:flex;align-items:center;gap:7px">
+                  <span style="font-size:22px">🌿</span>
+                  <div>
+                    <div class="t-h3">休闲游</div>
+                    <div class="t-xs">10 个点 · 日均 5 个</div>
+                  </div>
+                </div>
+                <span class="badge badge-ok">使用率 49%</span>
+              </div>
+              <div class="metrics">
+                <div class="metric"><span class="t-xs">总花费</span><span class="metric-v">¥593</span></div>
+                <div class="metric"><span class="t-xs">免费点占比</span><span class="metric-v">40%</span></div>
+                <div class="metric"><span class="t-xs">松弛提示</span><span class="metric-v">0 条</span></div>
+              </div>
+              <div class="d-day">
+                <div class="d-day-head"><span class="d-day-tag">Day 1</span><span class="d-day-theme">孔学堂线</span></div>
+                <div class="d-day-pois">孔学堂 → 花溪王记牛肉粉 → 花溪公园 → 十里河滩 → 豆米火锅</div>
+              </div>
+              <div class="d-day">
+                <div class="d-day-head"><span class="d-day-tag">Day 2</span><span class="d-day-theme">青岩古街盖碗茶线</span></div>
+                <div class="d-day-pois">青岩古街 → 青岩糕粑稀食 → 青岩古镇 → 定广门城墙</div>
+              </div>
+              <div class="btn-primary" style="margin-top:12px">用「休闲游」生成行程 →</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 6 我的 ============ -->
+    <div class="frame-wrap">
+      <div class="cap"><b>06 我的</b><span>渐变身份卡 + 行程卡（含预算进度）+ 合规入口</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="navbar">我的<span class="capsule">··· ｜ ◎</span></div>
+        <div class="body">
+          <div class="profile">
+            <div class="p-avatar">🙂</div>
+            <div style="flex:1;min-width:0">
+              <div class="p-name">溪山旅人</div>
+              <div class="p-sub">账号 xishan_traveler</div>
+            </div>
+            <span class="p-quit">退出</span>
+          </div>
+
+          <div class="sec-head" style="margin-top:8px">
+            <div>
+              <div class="sec-title">我的行程</div>
+              <div class="sec-sub">2 条已保存</div>
+            </div>
+            <span class="sec-more">＋ 新建</span>
+          </div>
+
+          <div class="card" style="padding:6px 12px">
+            <div class="trip">
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+                  <span style="font-size:15px">📸</span>
+                  <span class="trip-name">打卡游 · 2 天</span>
+                  <span class="badge badge-ok">已保存</span>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:4px;align-items:center">
+                  <span class="t-xs">2026-11-11 14:32</span>
+                  <span class="t-xs">预算 ¥1200</span>
+                  <span style="font-size:11.5px;font-weight:700;color:#1f6b4f">预估 ¥742</span>
+                </div>
+                <div class="trip-bar"><div class="trip-fill" style="width:62%"></div></div>
+              </div>
+              <span class="trip-del">删除</span>
+            </div>
+
+            <div class="trip">
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+                  <span style="font-size:15px">🌿</span>
+                  <span class="trip-name">休闲游 · 1 天</span>
+                  <span class="badge badge-ok">已保存</span>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:4px;align-items:center">
+                  <span class="t-xs">2026-11-10 09:18</span>
+                  <span class="t-xs">预算 ¥600</span>
+                  <span style="font-size:11.5px;font-weight:700;color:#1f6b4f">预估 ¥312</span>
+                </div>
+                <div class="trip-bar"><div class="trip-fill" style="width:52%"></div></div>
+              </div>
+              <span class="trip-del">删除</span>
+            </div>
+          </div>
+
+          <div class="sec-head">
+            <div>
+              <div class="sec-title">合规与帮助</div>
+              <div class="sec-sub">隐私与数据都在你的控制下</div>
+            </div>
+          </div>
+          <div class="card" style="padding:4px 12px 10px">
+            <div class="link"><span>隐私保护指引</span><span class="link-a">›</span></div>
+            <div class="link"><span>服务条款</span><span class="link-a">›</span></div>
+            <div class="link"><span>撤回隐私同意 / 清除本地数据</span><span class="link-a">›</span></div>
+            <div style="margin-top:6px;padding-top:7px;border-top:1px solid var(--line-soft);font-size:10px;line-height:1.75;color:#b7c2bd">
+              本服务仅提供旅游信息查询与行程参考，不含预订、代订、支付等交易功能。
+            </div>
+          </div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/home.png" alt="" />首页</div>
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/discover.png" alt="" />发现</div>
+          <div class="tab"><img src="../travel-miniapp/assets/tabbar/plan.png" alt="" />定制</div>
+          <div class="tab on"><img src="../travel-miniapp/assets/tabbar/mine-on.png" alt="" />我的</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</body>
+</html>

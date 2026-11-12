@@ -1,0 +1,66 @@
+<view class="auth-page">
+  <view class="brand-head">
+    <view class="mark">🌿</view>
+    <view class="brand-title">把花溪，走成自己的路线</view>
+    <view class="hint">一个账号，收好每一次出发</view>
+  </view>
+
+  <view class="card auth-card">
+    <view class="tabs">
+      <view class="tab {{mode === 'login' ? 'on' : ''}}" data-mode="login" bindtap="switchTab">登录</view>
+      <view class="tab {{mode === 'register' ? 'on' : ''}}" data-mode="register" bindtap="switchTab">注册</view>
+    </view>
+
+    <view class="auth-title">{{mode === 'login' ? '欢迎回来' : '创建游客账号'}}</view>
+    <view class="hint auth-sub">{{mode === 'login' ? '使用用户名或手机号登录' : '注册后自动登录，行程保存在账号下'}}</view>
+
+    <block wx:if="{{mode === 'login'}}">
+      <view class="field">
+        <text class="label">用户名 / 手机号</text>
+        <input class="input" placeholder="请输入用户名或手机号" value="{{form.account}}"
+               data-field="account" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="label">密码</text>
+        <input class="input" placeholder="请输入密码" password="true" value="{{form.password}}"
+               data-field="password" bindinput="onInput" />
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="field">
+        <text class="label">用户名 *</text>
+        <input class="input" placeholder="2~32 位中英文、数字或下划线" value="{{form.username}}"
+               data-field="username" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="label">昵称（选填）</text>
+        <input class="input" placeholder="展示用昵称" value="{{form.nickname}}"
+               data-field="nickname" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="label">手机号（选填）</text>
+        <input class="input" placeholder="可用于登录" type="number" value="{{form.phone}}"
+               data-field="phone" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="label">密码 *</text>
+        <input class="input" placeholder="至少 6 位" password="true" value="{{form.password}}"
+               data-field="password" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <text class="label">确认密码 *</text>
+        <input class="input" placeholder="再输入一次" password="true" value="{{form.password2}}"
+               data-field="password2" bindinput="onInput" />
+      </view>
+    </block>
+
+    <view wx:if="{{err}}" class="err-msg">{{err}}</view>
+    <button class="btn-primary submit" disabled="{{busy}}" bindtap="submit">
+      {{busy ? '请稍候…' : (mode === 'login' ? '登录' : '注册并登录')}}
+    </button>
+    <view class="guest" bindtap="guest">以游客身份先逛逛 →</view>
+  </view>
+
+  <view class="auth-tip hint">游客模式通过 wx.login 静默登录并签发 7 天 JWT，无需注册；行程不与账号绑定，换设备不会同步。</view>
+</view>

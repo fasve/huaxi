@@ -1,0 +1,22 @@
+# 构建镜像时排除的东西（保持镜像小、避免把密钥带进去）
+.git
+.idea
+.backup
+.tmp-build
+backuptmp
+design
+docs
+deploy
+travel-portal/node_modules
+travel-web/node_modules
+travel-miniapp
+travel-api/.venv
+travel-api/.venv.broken
+travel-api/logs
+travel-api/.env
+travel-api/.env.*
+**/__pycache__
+**/*.pyc
+**/*.sql
+**/*.zip
+**/*.png.bak

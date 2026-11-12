@@ -1,0 +1,164 @@
+<view class="page has-tabbar">
+  <!-- 搜索 + 分类 + 筛选 -->
+  <view class="filter-bar">
+    <view class="search-row">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        value="{{keyword}}"
+        placeholder="搜索名称 / 地址"
+        placeholder-class="ph"
+        confirm-type="search"
+        bindinput="onKeyword"
+        bindconfirm="search"
+      />
+      <view class="search-btn" bindtap="search">搜索</view>
+    </view>
+
+    <scroll-view scroll-x class="cats">
+      <view
+        wx:for="{{categories}}"
+        wx:key="code"
+        class="cat {{category === item.code ? 'on' : ''}}"
+        data-code="{{item.code}}"
+        bindtap="pickCategory"
+      >{{item.name}}</view>
+    </scroll-view>
+
+    <view class="filter-row">
+      <picker range="{{ratingLabels}}" value="{{ratingIndex}}" bindchange="onRating">
+        <view class="pick">{{ratingLabels[ratingIndex]}}<text class="pick-caret">▾</text></view>
+      </picker>
+      <picker range="{{priceLabels}}" value="{{priceIndex}}" bindchange="onPrice">
+        <view class="pick">{{priceLabels[priceIndex]}}<text class="pick-caret">▾</text></view>
+      </picker>
+      <view class="pick" bindtap="toggleMap">🗺 地图</view>
+      <view class="pick pick-reset" bindtap="resetFilter">重置</view>
+    </view>
+
+    <scroll-view wx:if="{{tags.length}}" scroll-x class="tag-row">
+      <view
+        wx:for="{{tags}}"
+        wx:key="code"
+        class="tagchip {{tagCode === item.code ? 'on' : ''}}"
+        data-code="{{item.code}}"
+        bindtap="toggleTag"
+      >{{item.name}}</view>
+    </scroll-view>
+  </view>
+
+  <view class="result-line">
+    <text class="t-sm">共 {{total}} 条资源</text>
+    <text class="t-sm">{{categoryLabel}}</text>
+  </view>
+
+  <!-- 资源卡片 -->
+  <view class="grid">
+    <view
+      wx:for="{{rows}}"
+      wx:key="id"
+      class="poi"
+      data-id="{{item.id}}"
+      bindtap="openDetail"
+    >
+      <view class="cover">
+        <image
+          wx:if="{{item.image}}"
+          class="cover-img"
+          src="{{item.image}}"
+          mode="aspectFill"
+          lazy-load
+        />
+        <view wx:else class="cover-img thumb-ph">{{item.initial}}</view>
+        <view class="cover-cat">{{item.category_name}}</view>
+        <view class="cover-rate">{{item.rating_text}}</view>
+      </view>
+      <view class="body">
+        <view class="name ellipsis">{{item.name}}</view>
+        <view class="sub ellipsis">{{item.sub_type}} · {{item.duration_text}}</view>
+        <view class="foot">
+          <text class="t-sm" style="color: var(--brand); font-weight: 600">{{item.price_text}}</text>
+          <text class="t-sm ellipsis">{{item.first_tag}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="list-foot">
+    <text wx:if="{{loading}}">加载中…</text>
+    <text wx:elif="{{finished}}">已经到底了</text>
+    <text wx:else>上拉加载更多</text>
+  </view>
+
+  <!-- 资源分布地图 -->
+  <view wx:if="{{showMap}}" class="map-mask" bindtap="closeMap">
+    <view class="map-panel" catchtap="stopEvent">
+      <view class="map-head">
+        <text class="t-sm">资源分布 · 当前 {{rows.length}} 个</text>
+        <text class="t-sm" style="color: var(--brand)" bindtap="closeMap">关闭</text>
+      </view>
+      <map
+        class="map"
+        latitude="{{mapLat}}"
+        longitude="{{mapLng}}"
+        markers="{{markers}}"
+        bindmarkertap="onMarkerTap"
+      />
+    </view>
+  </view>
+
+  <!-- 详情弹层 -->
+  <view wx:if="{{detail}}" class="map-mask" bindtap="closeDetail">
+    <view class="map-panel" catchtap="stopEvent">
+      <view class="map-head">
+        <text class="name">{{detail.name}}</text>
+        <text class="t-sm" style="color: var(--brand)" bindtap="closeDetail">关闭</text>
+      </view>
+
+      <scroll-view scroll-y style="max-height: 62vh">
+        <view wx:if="{{detailImages.length}}" class="gallery">
+          <image
+            wx:for="{{detailImages}}"
+            wx:key="*this"
+            wx:for-item="img"
+            class="gallery-img"
+            src="{{img}}"
+            mode="aspectFill"
+            data-src="{{img}}"
+            bindtap="previewImage"
+          />
+        </view>
+        <view wx:else class="gallery-empty">暂无实景图</view>
+
+        <view class="meta-grid">
+          <view class="meta">
+            <text class="t-sm">地址</text>
+            <text class="meta-v">{{detail.address || '花溪区'}}</text>
+          </view>
+          <view class="meta">
+            <text class="t-sm">建议时长</text>
+            <text class="meta-v">{{detail.duration_text}}</text>
+          </view>
+          <view class="meta">
+            <text class="t-sm">门票 / 人均</text>
+            <text class="meta-v">{{detail.price_text}}</text>
+          </view>
+          <view class="meta">
+            <text class="t-sm">开放时间</text>
+            <text class="meta-v">{{detail.open_text || '以现场为准'}}</text>
+          </view>
+        </view>
+
+        <view style="margin-top: 16rpx">
+          <text wx:for="{{detailTags}}" wx:key="*this" wx:for-item="t" class="tagchip">{{t}}</text>
+          <text wx:if="{{!detailTags.length}}" class="t-sm">暂无标签</text>
+        </view>
+
+        <view class="sheet-actions">
+          <button class="btn btn-ghost" bindtap="closeDetail">关闭</button>
+          <button class="btn btn-primary" bindtap="navToPoi">导航前往</button>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>

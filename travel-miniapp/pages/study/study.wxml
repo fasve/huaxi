@@ -1,0 +1,119 @@
+<scroll-view scroll-y class="page" style="height: 100vh">
+  <!-- 头部 -->
+  <view class="hero">
+    <view class="hero-title">🎓 游学路线</view>
+    <view class="hero-sub">官方编排的主题动线 · 逐站讲解 · 研学任务卡 · 日期感知</view>
+  </view>
+
+  <!-- 出行日期 -->
+  <view class="card">
+    <picker mode="date" value="{{visitDate}}" bindchange="onDateChange">
+      <view class="date-row">
+        <text>出行日期</text>
+        <text class="date-value">{{visitDate}} ›</text>
+      </view>
+    </picker>
+    <view class="day-note {{dayTone}}">
+      <view class="day-label">{{dayLabel}}</view>
+      <view class="hint">{{dayNote}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="card hint">线路加载中…</view>
+  <view wx:elif="{{!routes.length}}" class="card hint">暂无启用的主题路线，可在管理后台重新启用。</view>
+
+  <block wx:if="{{detail}}">
+    <!-- 线路选择 -->
+    <view wx:if="{{routes.length > 1}}" class="card">
+      <view class="sec-title">选择线路</view>
+      <view
+        wx:for="{{routes}}" wx:key="code"
+        class="route-chip {{item.code === detail.code ? 'on' : ''}}"
+        data-code="{{item.code}}" bindtap="pickRoute"
+      >{{item.title}}</view>
+    </view>
+
+    <!-- 线路概览 -->
+    <view class="card">
+      <view class="route-title">{{detail.title}}</view>
+      <view class="hint route-sub">{{detail.subtitle}}</view>
+      <view class="stat-row">
+        <view class="stat"><text class="stat-b">{{detail.stop_count}}</text><text class="hint">站点</text></view>
+        <view class="stat"><text class="stat-b">{{detail.duration_hours}}h</text><text class="hint">半日</text></view>
+        <view class="stat"><text class="stat-b">{{detail.total_walk_min}}分</text><text class="hint">步行</text></view>
+        <view class="stat"><text class="stat-b">¥0</text><text class="hint">门票</text></view>
+      </view>
+      <view class="summary">{{detail.summary}}</view>
+    </view>
+
+    <!-- 预约与日期闸门提示 -->
+    <view class="card warn-card">
+      <view class="sec-title">⚠️ 入校前必读</view>
+      <view class="hint">{{detail.reservation_note}}</view>
+      <view class="hint trans">{{detail.transit_note}}</view>
+      <block wx:if="{{gateNotes.length}}">
+        <view class="gn-title">本次日期的自动调整</view>
+        <view wx:for="{{gateNotes}}" wx:key="*this" class="gn-item">↳ {{item}}</view>
+      </block>
+    </view>
+
+    <!-- 全天加段开关 -->
+    <view class="card switch-row">
+      <view>
+        <view class="sec-title">并入全天深度版</view>
+        <view class="hint">南校区近现代建筑群 +90 分钟</view>
+      </view>
+      <switch checked="{{includeAddon}}" bindchange="onAddon" color="#2F7D5C" />
+    </view>
+
+    <!-- 逐站讲解 -->
+    <view class="sec-outer-title">逐站讲解与研学任务（{{stops.length}} 站）</view>
+    <view wx:for="{{stops}}" wx:key="seq" wx:for-item="s" class="card stop-card">
+      <view class="stop-head">
+        <text class="seq">{{s.seq}}</text>
+        <view class="stop-titles">
+          <view class="stop-title">{{s.narration_title}}</view>
+          <view class="stop-place">📍 {{s.name}}</view>
+        </view>
+        <text class="gate {{s.gateCls}}">{{s.gateLabel}}</text>
+      </view>
+      <view class="tag-row">
+        <text wx:if="{{s.tagText}}" class="mini-tag">{{s.tagText}}</text>
+        <text wx:if="{{s.replaced}}" class="mini-tag warn">原为「{{s.original_name}}」</text>
+      </view>
+      <view class="facts">
+        <text>⏱ {{s.stayText}}</text>
+        <text>🚶 步行 {{s.walk_in_min}} 分</text>
+        <text>{{s.slotText}}</text>
+      </view>
+      <view class="narration">{{s.narration_text}}</view>
+      <view wx:for="{{s.tasks}}" wx:key="index" wx:for-item="t" class="task">
+        📝 {{t.title}}：{{t.content}}
+      </view>
+      <view wx:if="{{s.photo_tip}}" class="photo">📷 {{s.photo_tip}}</view>
+      <view wx:for="{{s.gateNotes}}" wx:key="index" wx:for-item="n" class="gn-item">↳ {{n}}</view>
+    </view>
+
+    <!-- 一键成程 -->
+    <view class="card gen-card">
+      <view class="sec-title">一键成程：半天游学 + 半天自由游</view>
+      <view class="hint gen-hint">站点按序预占第 1 天，其余槽位按所选模式自动补全</view>
+      <picker mode="selector" range="{{modeNames}}" value="{{modeIndex}}" bindchange="onMode">
+        <view class="form-row"><text>自由游模式</text><text class="date-value">{{modeNames[modeIndex]}} ›</text></view>
+      </picker>
+      <view class="slider-row">
+        <text>天数 {{days}} 天</text>
+        <slider min="1" max="7" value="{{days}}" bindchange="onDays" activeColor="#2F7D5C" block-size="20" />
+      </view>
+      <view class="form-row">
+        <text>总预算（元）</text>
+        <input type="number" value="{{budget}}" bindinput="onBudget" class="budget-input" />
+      </view>
+      <button class="gen-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="generate">
+        生成游学行程 →
+      </button>
+    </view>
+  </block>
+
+  <view class="hint footer">政策与开放时段为演示口径，出行前请按校方最新公告核实</view>
+</scroll-view>

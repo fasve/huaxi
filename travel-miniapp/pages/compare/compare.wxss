@@ -1,0 +1,215 @@
+.page {
+  padding-bottom: 40rpx;
+}
+
+/* ---------- 条件表单 ---------- */
+.form-row {
+  display: flex;
+  gap: 14rpx;
+  margin-top: 24rpx;
+}
+.field {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.field-label {
+  font-size: 20rpx;
+  color: var(--muted);
+}
+.field-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6rpx;
+  height: 76rpx;
+  padding: 0 18rpx;
+  border-radius: var(--r-md);
+  background: #f6f9f7;
+  border: 1rpx solid var(--line);
+  font-size: 26rpx;
+  color: var(--ink);
+}
+.caret {
+  font-size: 18rpx;
+  color: var(--faint);
+  flex: none;
+}
+.yen {
+  font-size: 22rpx;
+  color: var(--brand);
+  flex: none;
+}
+.field-input {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+  font-size: 28rpx;
+  color: var(--ink);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 22rpx;
+}
+
+/* ---------- 差异总结 ---------- */
+.summary {
+  margin-top: var(--sp-3);
+}
+.sum-list {
+  margin-top: 14rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+.sum-item {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+.sum-dot {
+  flex: none;
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background: var(--brand-tint);
+  color: var(--brand-deep);
+  font-size: 18rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sum-text {
+  font-size: 24rpx;
+  color: var(--body);
+}
+
+/* ---------- 模式小卡 ---------- */
+.modes {
+  white-space: nowrap;
+  padding: 4rpx var(--gutter) 8rpx;
+}
+.mcard {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4rpx;
+  width: 172rpx;
+  box-sizing: border-box;
+  margin-right: 14rpx;
+  padding: 14rpx;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 2rpx solid var(--line);
+  box-shadow: var(--sh-card);
+  white-space: normal;
+  transition: all 0.16s ease;
+}
+.mcard:last-child {
+  margin-right: 0;
+}
+.mcard.on {
+  border-color: var(--brand);
+  background: var(--brand-tint-2);
+}
+.mc-emoji { font-size: 32rpx; }
+.mc-name { font-size: 24rpx; font-weight: 600; color: var(--ink); }
+.mc-cost { font-size: 28rpx; color: var(--brand-deep); }
+.mc-bar {
+  height: 8rpx;
+  border-radius: var(--r-pill);
+  background: #e9eeeb;
+  overflow: hidden;
+  margin-top: 6rpx;
+}
+.mc-fill {
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--brand-mid);
+}
+.mcard.on .mc-fill { background: var(--brand); }
+.mc-usage { font-size: 18rpx; color: var(--muted); }
+
+/* ---------- 详情 ---------- */
+.detail {
+  margin-top: 4rpx;
+}
+.d-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+.d-title {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+.d-emoji { font-size: 44rpx; }
+.metrics {
+  display: flex;
+  margin-top: 20rpx;
+  padding: 18rpx 0;
+  border-top: 1rpx solid var(--line-soft);
+  border-bottom: 1rpx solid var(--line-soft);
+}
+.metric {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  align-items: center;
+}
+.metric-v {
+  font-size: 30rpx;
+  color: var(--ink);
+}
+.hotel-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 16rpx 0;
+}
+.hotel-v {
+  flex: 1;
+  font-size: 24rpx;
+  color: var(--body);
+}
+.d-days {
+  padding-top: 6rpx;
+  border-top: 1rpx solid var(--line-soft);
+}
+.d-day {
+  padding: 14rpx 0;
+  border-bottom: 1rpx dashed var(--line);
+}
+.d-day:last-child { border-bottom: none; }
+.d-day-head {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.d-day-tag {
+  flex: none;
+  padding: 2rpx 12rpx;
+  border-radius: var(--r-sm);
+  background: var(--brand-tint);
+  color: var(--brand-deep);
+  font-size: 18rpx;
+  font-weight: 700;
+}
+.d-day-theme {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+.d-day-pois {
+  margin-top: 6rpx;
+  font-size: 21rpx;
+  line-height: 1.65;
+  color: var(--muted);
+}

@@ -1,0 +1,270 @@
+{
+  "accepted_total": 220,
+  "by_category": {
+    "scenic": 70,
+    "food": 80,
+    "hotel": 30,
+    "leisure": 40
+  },
+  "review_needed": 114,
+  "skipped_total": 52,
+  "skipped": [
+    {
+      "name": "花溪十里河滩国家城市湿地公园",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "天河潭旅游度假区",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "花溪夜郎谷",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "花溪公园",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "贵阳阿哈湖国家湿地公园",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "青岩古镇",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "云顶花海",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "孔学堂",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "花溪十里河滩旅游度假区",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "板桥艺术村",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "麦翁布依古寨",
+      "category": "scenic",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "花溪王记牛肉粉(四季花溪商场店)",
+      "category": "food",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "贵厨酸汤牛肉(小河万科广场店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "花溪飞碗牛肉粉(花阔路店)",
+      "category": "food",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "大胖刘烙锅(南山高地店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "灌木咖啡(花溪乡贤里店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "牛鼎世家鲜切牛肉火锅",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "老孔家烙锅(清水江生活小区店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "黔牛汇·酸汤跳水牛肉(花溪店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "心有客酸汤牛肉火锅(朝阳店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "去茶山(海纳广场店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "冉林禾土黄牛肉粉(缤纷广场店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "冉林禾土黄牛肉粉(珠江路店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "丝恋丝娃娃(贵阳万科广场店)",
+      "category": "food",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "黔渔翁豆花渎鱼(花溪万宜店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "小肥猪地摊火锅(珠江路店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "麦当劳(贵阳花溪万宜餐厅)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "花溪王记牛肉粉(金竹店)",
+      "category": "food",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "花溪四爷牛肉粉(孟关店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "丝恋丝娃娃(小河海纳店)",
+      "category": "food",
+      "reason": "与现有资源重名/同地异名"
+    },
+    {
+      "name": "星巴克(龙湾国际店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "塔斯汀中国汉堡(贵阳市花溪万科大都会店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "星巴克(贵阳万科大都会广场分店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "瑞幸咖啡(贵阳腾龙湾店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "花溪牛肉粉(思雅郡店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "灌木咖啡(小河星河店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "星巴克(万宜广场店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "必胜客(乡贤里店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "塔斯汀中国汉堡(贵阳市腾龙湾店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "瑞幸咖啡(花溪三00医院店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "花溪黄记牛肉粉(青岩店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "但家香酥鸭(海纳广场店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "但家香酥鸭(小河万科店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "瑞幸咖啡(万科大都会店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "古茗(小河万科大都会店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "黔鸭坊(贵大学府里店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "花溪牛肉粉(恒大店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "肯德基(黄河路店)",
+      "category": "food",
+      "reason": "抓取结果内部重名"
+    },
+    {
+      "name": "胡幺妹活油烙锅",
+      "category": "food",
+      "reason": "与 幺妹活油烙锅(万科大都会南区店) 高度相似"
+    },
+    {
+      "name": "汉庭酒店(贵阳花溪公园十字街店)",
+      "category": "hotel",
+      "reason": "与现有资源重名/同地异名"
+    }
+  ],
+  "quadrant_distribution": {
+    "东南": 59,
+    "西北": 63,
+    "东北": 54,
+    "西南": 44
+  },
+  "generated_at": "2026-11-12 09:50:16"
+}

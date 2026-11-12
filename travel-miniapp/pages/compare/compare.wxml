@@ -1,0 +1,135 @@
+<view class="page">
+  <!-- 条件 -->
+  <view class="card">
+    <view class="t-h3">同一组需求，四种模式</view>
+    <view class="t-xs" style="margin-top: 6rpx">并排对比算法输出，看权重差异如何改变节奏与花费</view>
+
+    <view class="form-row">
+      <view class="field">
+        <text class="field-label">天数</text>
+        <picker range="{{daysOptions}}" value="{{daysIndex}}" bindchange="onDays">
+          <view class="field-box">{{days}} 天<text class="caret">▾</text></view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="field-label">人均预算</text>
+        <view class="field-box">
+          <text class="yen">¥</text>
+          <input class="field-input t-num" type="number" value="{{budget}}" bindinput="onBudget" />
+        </view>
+      </view>
+      <view class="field">
+        <text class="field-label">人群</text>
+        <picker range="{{partyTypes}}" range-key="label" value="{{partyIndex}}" bindchange="onParty">
+          <view class="field-box ellipsis">{{partyTypes[partyIndex].label}}<text class="caret">▾</text></view>
+        </picker>
+      </view>
+    </view>
+
+    <view wx:if="{{tags.length}}" class="chips">
+      <view
+        wx:for="{{tags}}"
+        wx:key="code"
+        class="chip chip-sm {{selectedPrefs.indexOf(item.code) >= 0 ? 'on' : ''}}"
+        data-code="{{item.code}}"
+        bindtap="togglePref"
+      >{{item.name}}</view>
+    </view>
+
+    <button class="btn btn-primary btn-block" style="margin-top: 26rpx" loading="{{loading}}" bindtap="run">
+      {{loading ? '计算中…' : '开始对比'}}
+    </button>
+  </view>
+
+  <view wx:if="{{!compared && !loading}}" class="empty">
+    <view class="empty-icon">⚖️</view>
+    <view class="empty-title">填好条件，看看四种模式差在哪</view>
+    <view class="empty-text">同一组天数 / 预算 / 偏好，算法会给出四条完全不同的路线</view>
+  </view>
+
+  <block wx:if="{{compared && active}}">
+    <!-- 差异总结 -->
+    <view class="card summary">
+      <view class="row-between">
+        <view class="t-h4">一眼看懂差异</view>
+        <text class="tag tag-line">不落库</text>
+      </view>
+      <view class="sum-list">
+        <view wx:for="{{insights}}" wx:key="*this" wx:for-item="s" class="sum-item">
+          <text class="sum-dot">{{index + 1}}</text>
+          <text class="sum-text">{{s}}</text>
+        </view>
+      </view>
+      <view wx:if="{{note}}" class="t-xs" style="margin-top: 12rpx">{{note}}</view>
+    </view>
+
+    <!-- 模式小卡 -->
+    <scroll-view scroll-x class="modes">
+      <view
+        wx:for="{{results}}"
+        wx:key="mode"
+        class="mcard {{activeIndex === index ? 'on' : ''}}"
+        data-idx="{{index}}"
+        bindtap="pickMode"
+      >
+        <text class="mc-emoji">{{item.emoji}}</text>
+        <text class="mc-name">{{item.mode_name}}</text>
+        <text class="mc-cost t-num">¥{{item.total_cost}}</text>
+        <view class="mc-bar">
+          <view class="mc-fill" style="width: {{item.usage_percent > 100 ? 100 : item.usage_percent}}%"></view>
+        </view>
+        <text class="mc-usage">{{item.usage_percent}}%</text>
+      </view>
+    </scroll-view>
+
+    <!-- 选中模式详情 -->
+    <view class="card detail">
+      <view class="d-head">
+        <view class="d-title">
+          <text class="d-emoji">{{active.emoji}}</text>
+          <view>
+            <view class="t-h3">{{active.mode_name}}</view>
+            <view class="t-xs">{{active.poi_count}} 个点 · 日均 {{active.poi_per_day}} 个</view>
+          </view>
+        </view>
+        <view class="badge {{active.usage_percent > 100 ? 'badge-danger' : 'badge-ok'}}">
+          使用率 {{active.usage_percent}}%
+        </view>
+      </view>
+
+      <view class="metrics">
+        <view class="metric">
+          <text class="t-xs">总花费</text>
+          <text class="metric-v t-num">¥{{active.total_cost}}</text>
+        </view>
+        <view class="metric">
+          <text class="t-xs">免费点占比</text>
+          <text class="metric-v t-num">{{active.free_percent}}%</text>
+        </view>
+        <view class="metric">
+          <text class="t-xs">松弛提示</text>
+          <text class="metric-v t-num">{{active.relax_count}} 条</text>
+        </view>
+      </view>
+
+      <view class="hotel-row">
+        <text class="t-xs">住宿</text>
+        <text class="hotel-v ellipsis">{{active.hotel_text}}</text>
+      </view>
+
+      <view class="d-days">
+        <view wx:for="{{active.days}}" wx:key="day_index" wx:for-item="d" class="d-day">
+          <view class="d-day-head">
+            <text class="d-day-tag">Day {{d.day_index}}</text>
+            <text class="d-day-theme ellipsis">{{d.theme}}</text>
+          </view>
+          <view class="d-day-pois">{{d.poi_text}}</view>
+        </view>
+      </view>
+
+      <button class="btn btn-primary btn-block" data-mode="{{active.mode}}" bindtap="useMode">
+        用「{{active.mode_name}}」生成行程 →
+      </button>
+    </view>
+  </block>
+</view>

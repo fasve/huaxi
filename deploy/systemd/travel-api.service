@@ -1,0 +1,36 @@
+[Unit]
+Description=Travel API (FastAPI / Uvicorn)
+Documentation=https://your-domain.cn/docs
+After=network-online.target mysql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=travel
+Group=travel
+WorkingDirectory=/srv/travel/travel-api
+# 敏感配置全部放这里，权限 600，属主 travel
+EnvironmentFile=/srv/travel/travel-api/.env
+# 只监听本机 127.0.0.1，由 Nginx 反代对外；不要直接暴露 8000
+ExecStart=/srv/travel/travel-api/.venv/bin/python -m uvicorn app.main:app \
+    --host 127.0.0.1 --port 8000 --workers 2 \
+    --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=always
+RestartSec=3
+TimeoutStopSec=20
+KillSignal=SIGINT
+
+# ---- 安全加固 ----
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/srv/travel/travel-api/static /srv/travel/travel-api/logs
+LimitNOFILE=65535
+
+# ---- 日志 ----
+StandardOutput=append:/srv/travel/travel-api/logs/api.out.log
+StandardError=append:/srv/travel/travel-api/logs/api.err.log
+
+[Install]
+WantedBy=multi-user.target

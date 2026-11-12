@@ -1,0 +1,25 @@
+<view class="page">
+  <view class="tabs">
+    <view class="tab {{doc === 'privacy' ? 'on' : ''}}" data-doc="privacy" bindtap="switchDoc">隐私保护指引</view>
+    <view class="tab {{doc === 'terms' ? 'on' : ''}}" data-doc="terms" bindtap="switchDoc">服务条款</view>
+  </view>
+
+  <view class="meta">{{title}} · 版本 {{version}} · 生效日期 {{updated}}</view>
+
+  <view wx:for="{{sections}}" wx:key="title" class="sec">
+    <view class="sec-title">{{index + 1}}. {{item.title}}</view>
+    <view wx:for="{{item.paragraphs}}" wx:for-item="p" wx:key="*this" class="p">{{p}}</view>
+  </view>
+
+  <view class="foot">
+    <view>运营主体：请在上架前替换为营业执照登记名称</view>
+    <view>ICP 备案号 / 公安备案号：备案通过后填写并同步至小程序后台</view>
+    <view>联系邮箱：privacy@example.cn（上线前替换）</view>
+  </view>
+
+  <view wx:if="{{showAgree}}" class="actions">
+    <button class="btn-primary" bindtap="agree">同意并继续</button>
+    <button class="btn-ghost" bindtap="later">暂不同意，仅浏览公开信息</button>
+    <view class="hint tip">不同意仍可浏览公开资源与生成匿名行程；保存行程等需要身份的功能不可用。</view>
+  </view>
+</view>

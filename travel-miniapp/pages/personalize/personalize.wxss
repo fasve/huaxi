@@ -1,0 +1,360 @@
+/* 个性化页：沿用全局令牌（app.wxss），这里只写本页版式 */
+.pz-page {
+  padding: var(--gutter);
+  min-height: 100vh;
+}
+.pz-card {
+  background: var(--surface);
+  border: 1rpx solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-3);
+  box-shadow: var(--sh-card);
+}
+.pz-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 20rpx;
+}
+.pz-sub {
+  font-size: 22rpx;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 10rpx;
+}
+.pz-sub-label {
+  font-size: 24rpx;
+  color: var(--muted);
+  margin: 20rpx 0 14rpx;
+}
+.pz-loading {
+  text-align: center;
+  color: var(--muted);
+  font-size: 26rpx;
+  padding: 60rpx 0;
+}
+
+/* 模式 */
+.pz-mode-row {
+  display: flex;
+  gap: 14rpx;
+}
+.pz-mode {
+  flex: 1;
+  border: 2rpx solid var(--line);
+  border-radius: var(--r-md);
+  padding: 20rpx 4rpx;
+  text-align: center;
+  transition: all 0.16s ease;
+}
+.pz-mode.on {
+  border-color: var(--brand);
+  background: var(--brand-tint-2);
+  box-shadow: 0 6rpx 18rpx rgba(47, 125, 92, 0.1);
+}
+.pz-mode-e {
+  display: block;
+  font-size: 40rpx;
+}
+.pz-mode-n {
+  display: block;
+  font-size: 22rpx;
+  font-weight: 600;
+  margin-top: 6rpx;
+  color: var(--body);
+}
+.pz-mode.on .pz-mode-n {
+  color: var(--brand-deep);
+}
+
+/* 预设 */
+.pz-preset-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+.pz-preset {
+  width: calc((100% - 28rpx) / 3);
+  box-sizing: border-box;
+  border: 2rpx solid var(--line);
+  border-radius: var(--r-md);
+  padding: 18rpx 14rpx;
+}
+.pz-preset:active {
+  border-color: var(--brand);
+  background: var(--brand-tint-2);
+}
+.pz-p-icon {
+  font-size: 32rpx;
+}
+.pz-p-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
+  margin-top: 6rpx;
+  color: var(--ink);
+}
+.pz-p-desc {
+  display: block;
+  font-size: 20rpx;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: 4rpx;
+}
+
+/* 关注度滑块 */
+.pz-slider {
+  padding: 16rpx 0;
+  border-bottom: 1rpx dashed var(--line);
+}
+.pz-slider:last-child {
+  border-bottom: none;
+}
+.pz-s-head {
+  display: flex;
+  align-items: center;
+}
+.pz-s-icon {
+  font-size: 28rpx;
+  margin-right: 10rpx;
+}
+.pz-s-label {
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+.pz-s-pct {
+  font-size: 26rpx;
+  color: var(--brand);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.pz-slider-ctl {
+  margin: 8rpx 0 4rpx;
+}
+.pz-s-hint {
+  font-size: 21rpx;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.pz-total {
+  text-align: right;
+  font-size: 22rpx;
+  color: var(--muted);
+  margin-top: 16rpx;
+}
+
+/* 节奏微调 */
+.pz-pace {
+  padding-top: 4rpx;
+}
+.pz-pace-item {
+  margin-bottom: 18rpx;
+}
+.pz-pace-label {
+  font-size: 25rpx;
+  color: var(--body);
+  margin-bottom: 6rpx;
+}
+.pz-evening-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+.pz-chip {
+  padding: 12rpx 24rpx;
+  border-radius: var(--r-pill);
+  background: #f2f6f4;
+  color: var(--body);
+  font-size: 24rpx;
+  border: 2rpx solid transparent;
+}
+.pz-chip.on {
+  background: var(--brand-tint);
+  color: var(--brand-deep);
+  border-color: var(--brand);
+  font-weight: 600;
+}
+
+/* 选点预览 */
+.pz-pv-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18rpx;
+}
+.pz-tag {
+  font-size: 20rpx;
+  padding: 4rpx 16rpx;
+  border-radius: var(--r-pill);
+}
+.pz-tag.orange {
+  background: var(--accent-tint);
+  color: #b4601f;
+}
+.pz-tag.gray {
+  background: #f2f6f4;
+  color: var(--muted);
+}
+.pz-pv-list {
+  display: flex;
+  flex-direction: column;
+}
+.pz-pv-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--line-soft);
+}
+.pz-pv-item:last-child {
+  border-bottom: none;
+}
+.pz-pv-rank {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: var(--brand-tint);
+  color: var(--brand-deep);
+  font-size: 22rpx;
+  font-weight: 700;
+  text-align: center;
+  line-height: 40rpx;
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.pz-pv-thumb {
+  width: 92rpx;
+  height: 70rpx;
+  border-radius: var(--r-sm);
+  flex: none;
+  background: #f2f6f4;
+}
+.pz-pv-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+}
+.pz-pv-body {
+  flex: 1;
+  overflow: hidden;
+}
+.pz-pv-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pz-pv-sub {
+  font-size: 21rpx;
+  color: var(--muted);
+  margin-top: 4rpx;
+}
+.pz-pv-delta {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 70rpx;
+  text-align: right;
+  flex: none;
+}
+.pz-pv-delta.up {
+  color: var(--danger);
+}
+.pz-pv-delta.down {
+  color: var(--brand);
+}
+
+/* 差异提示 */
+.pz-changed {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+.pz-ch {
+  font-size: 22rpx;
+  padding: 6rpx 18rpx;
+  border-radius: var(--r-pill);
+}
+.pz-ch.up {
+  background: #fdeceb;
+  color: #b23a2f;
+}
+.pz-ch.down {
+  background: var(--brand-tint);
+  color: var(--brand-deep);
+}
+
+/* 操作 */
+.pz-actions {
+  padding: 8rpx var(--gutter) 60rpx;
+}
+.pz-btn {
+  background: linear-gradient(135deg, var(--brand), #3d9470);
+  color: #fff;
+  border-radius: var(--r-pill);
+  font-size: 30rpx;
+  font-weight: 600;
+  box-shadow: var(--sh-brand);
+}
+.pz-btn::after {
+  border: none;
+}
+.pz-btn[disabled] {
+  background: #a9c6b8;
+  color: #fff;
+  box-shadow: none;
+}
+.pz-tip {
+  font-size: 22rpx;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-top: 18rpx;
+  text-align: center;
+}
+
+/* 行程规模（天数 / 预算） */
+.pz-scale {
+  padding: 4rpx 0 0;
+}
+.pz-scale-item {
+  margin-bottom: 14rpx;
+}
+.pz-scale-label {
+  font-size: 26rpx;
+  color: var(--body);
+}
+.pz-scale-val {
+  color: var(--brand);
+  font-weight: 700;
+}
+.pz-scale-budget {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+.pz-budget-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  border-bottom: 2rpx solid var(--line);
+  padding-bottom: 6rpx;
+}
+.pz-budget {
+  width: 200rpx;
+  text-align: right;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.pz-scale-unit {
+  font-size: 24rpx;
+  color: var(--muted);
+}

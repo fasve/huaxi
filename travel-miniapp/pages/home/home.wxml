@@ -1,0 +1,201 @@
+<view class="page has-tabbar">
+  <!-- 沉浸式头图 -->
+  <view class="hero">
+    <view class="hero-top">
+      <view class="brand-mark">
+        <view class="bm-dot"></view>
+        <text class="bm-text">花溪旅行</text>
+      </view>
+      <view class="hero-badge">贵阳 · 花溪区</view>
+    </view>
+
+    <view class="hero-title">把花溪，玩成<text class="hero-hl">你想要的模样</text></view>
+    <view class="hero-sub">选一种旅行方式，填好天数与预算，系统自动排好每日路线、餐食与住宿。</view>
+
+    <view class="hero-actions">
+      <view class="ha ha-primary" bindtap="goPlan">开始定制 →</view>
+      <view class="ha ha-ghost" bindtap="goCompare">四模式对比</view>
+      <view class="ha ha-ghost" bindtap="goChat">问小旅</view>
+    </view>
+  </view>
+
+  <!-- 压在头图上的数据条 -->
+  <view class="stat-card">
+    <view class="stat">
+      <text class="stat-n t-num">{{totalPois}}</text>
+      <text class="stat-l">本地资源点</text>
+    </view>
+    <view class="stat-div"></view>
+    <view class="stat">
+      <text class="stat-n t-num">4</text>
+      <text class="stat-l">旅行模式</text>
+    </view>
+    <view class="stat-div"></view>
+    <view class="stat">
+      <text class="stat-n t-num">8</text>
+      <text class="stat-l">权重维度</text>
+    </view>
+  </view>
+
+  <!-- 天气 -->
+  <view class="card weather">
+    <view class="w-head">
+      <view>
+        <view class="t-h4">出行前，先看实时天气</view>
+        <view class="t-xs">花溪区 · 实况与未来 15 天</view>
+      </view>
+      <text class="w-src">Open-Meteo</text>
+    </view>
+
+    <block wx:if="{{weather}}">
+      <view class="w-live">
+        <view class="w-main">
+          <text class="w-temp t-num">{{weather.temperature}}°</text>
+          <view class="w-desc">
+            <text class="w-text">{{weather.weather}}</text>
+            <text class="t-xs">体感 {{weather.feels_like}}° · 湿度 {{weather.humidity}}%</text>
+          </view>
+        </view>
+        <view class="w-chips">
+          <text class="w-chip">{{weather.winddirection}}风 {{weather.windpower}}级</text>
+          <text class="w-chip">云量 {{weather.cloud_cover}}%</text>
+          <text class="w-chip">降水 {{weather.precipitation}}mm</text>
+        </view>
+      </view>
+
+      <scroll-view wx:if="{{casts.length}}" scroll-x class="w-strip">
+        <view wx:for="{{casts}}" wx:key="date" class="fc">
+          <text class="fc-week">{{item.week}}</text>
+          <text class="fc-emoji">{{item.emoji}}</text>
+          <text class="fc-temp t-num">{{item.daytemp}}°<text class="fc-low">{{item.nighttemp}}°</text></text>
+          <text class="fc-rain {{item.precip ? 'on' : ''}}">{{item.precip || '—'}}</text>
+        </view>
+      </scroll-view>
+    </block>
+
+    <view wx:else class="w-empty">
+      <text class="t-sm">{{weatherError || '天气加载中…'}}</text>
+      <text wx:if="{{weatherError}}" class="t-xs">天气不可用不影响行程生成，可下拉刷新重试</text>
+    </view>
+  </view>
+
+  <!-- 游学线 -->
+  <view wx:if="{{studyTitle}}" class="study" bindtap="goStudy">
+    <view class="study-badge">🎓</view>
+    <view class="study-main">
+      <view class="study-eyebrow">预设主题路线 · 游学</view>
+      <view class="study-title">{{studyTitle}}</view>
+      <view class="t-xs ellipsis">{{studySub}}</view>
+      <view class="study-note">{{studyDay}}</view>
+    </view>
+    <view class="study-go">›</view>
+  </view>
+
+  <!-- 四种模式 -->
+  <view class="sec-head">
+    <view>
+      <view class="sec-title">选择旅行方式</view>
+      <view class="sec-sub">同一组需求，四种节奏</view>
+    </view>
+    <text class="sec-more" bindtap="goCompare">并排对比 ›</text>
+  </view>
+
+  <view class="mode-grid">
+    <view
+      wx:for="{{modes}}"
+      wx:key="mode"
+      class="mode card-press"
+      data-mode="{{item.mode}}"
+      bindtap="pickMode"
+    >
+      <view class="mode-emoji">{{item.emoji}}</view>
+      <view class="mode-name">{{item.mode_name}}</view>
+      <view class="mode-desc ellipsis-2">{{item.description}}</view>
+      <view class="mode-foot">
+        <text class="mode-cost t-num">2 天 ≈ ¥{{item.estimate2d}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 精选 -->
+  <view class="sec-head">
+    <view>
+      <view class="sec-title">花溪精选</view>
+      <view class="sec-sub">高分地点，也是算法的候选池</view>
+    </view>
+    <text class="sec-more" bindtap="goExplore">全部 {{totalPois}} 个 ›</text>
+  </view>
+
+  <scroll-view scroll-x class="picks">
+    <view
+      wx:for="{{hotPois}}"
+      wx:key="id"
+      class="pick"
+      data-id="{{item.id}}"
+      bindtap="openPoi"
+    >
+      <image wx:if="{{item.image}}" class="pick-img" src="{{item.image}}" mode="aspectFill" lazy-load />
+      <view wx:else class="pick-img thumb-ph">{{item.initial}}</view>
+      <view class="pick-body">
+        <view class="pick-name ellipsis">{{item.name}}</view>
+        <view class="pick-sub ellipsis">{{item.sub_type}} · {{item.duration_text}}</view>
+        <view class="pick-foot">
+          <text class="rating">{{item.rating_text}}</text>
+          <text class="price">{{item.price_text}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="picks-tail"></view>
+  </scroll-view>
+
+  <view class="foot-note">数据口径：本地演示种子数据 · 仅提供行程参考，不含预订与交易</view>
+
+  <!-- POI 详情 -->
+  <view wx:if="{{poiDetail}}" class="mask" bindtap="closePoi">
+    <view class="sheet" catchtap="stopEvent">
+      <view class="sheet-grab"></view>
+      <image
+        wx:if="{{poiDetail.image}}"
+        class="detail-cover"
+        src="{{poiDetail.image}}"
+        mode="aspectFill"
+      />
+      <view class="sheet-head">
+        <view class="sheet-title">{{poiDetail.name}}</view>
+        <view class="sheet-close" bindtap="closePoi">✕</view>
+      </view>
+      <view class="sheet-body">
+        <view class="row gap-1" style="flex-wrap: wrap">
+          <text class="tag tag-brand">{{poiDetail.category_name}}</text>
+          <text class="tag tag-line">{{poiDetail.sub_type}}</text>
+          <text class="tag tag-accent">★ {{poiDetail.rating_text}}</text>
+        </view>
+
+        <view class="meta-grid">
+          <view class="meta">
+            <text class="t-xs">建议游玩</text>
+            <text class="meta-v">{{poiDetail.suggest_duration_min}} 分钟</text>
+          </view>
+          <view class="meta">
+            <text class="t-xs">门票 / 人均</text>
+            <text class="meta-v t-accent">{{poiDetail.price_text}}</text>
+          </view>
+          <view class="meta">
+            <text class="t-xs">地址</text>
+            <text class="meta-v">{{poiDetail.address || '花溪区'}}</text>
+          </view>
+        </view>
+
+        <view class="t-xs" style="margin-top: 12rpx">关联标签</view>
+        <view class="row gap-1" style="flex-wrap: wrap; margin-top: 12rpx">
+          <text wx:for="{{poiDetail.tag_names}}" wx:key="*this" class="tag">{{item}}</text>
+        </view>
+
+        <view class="sheet-actions">
+          <button class="btn btn-ghost btn-block" bindtap="closePoi">关闭</button>
+          <button class="btn btn-primary btn-block" bindtap="navToPoi">导航前往</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

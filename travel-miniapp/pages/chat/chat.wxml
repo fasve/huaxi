@@ -1,0 +1,99 @@
+<view class="page chat">
+  <view class="hero card">
+    <view class="hero-ava">🌿</view>
+    <view class="hero-copy">
+      <view class="hero-title">问小旅</view>
+      <view class="hero-sub">{{modeText}}</view>
+    </view>
+    <view class="hero-actions">
+      <view class="hero-btn" bindtap="toggleHistory">历史</view>
+      <view class="hero-btn" bindtap="newChat">新对话</view>
+    </view>
+  </view>
+
+  <scroll-view class="msgs" scroll-y scroll-into-view="{{anchor}}" scroll-with-animation>
+    <view wx:if="{{!messages.length}}" class="intro">
+      <view class="intro-emoji">🌿</view>
+      <view class="intro-title">你好，我是小旅</view>
+      <view class="intro-sub">可以问花溪的景点、美食、住宿、交通、行程模式，也能问门票和避坑。</view>
+      <view class="chips">
+        <view
+          wx:for="{{suggestions}}"
+          wx:key="*this"
+          class="chip sug"
+          data-q="{{item}}"
+          bindtap="askSuggestion"
+        >{{item}}</view>
+      </view>
+    </view>
+
+    <block wx:for="{{messages}}" wx:key="key">
+      <view class="row {{item.role}}">
+        <view class="bubble {{item.role}} {{item.error ? 'err' : ''}}">
+          <text class="bubble-text">{{item.text}}</text>
+          <view wx:if="{{item.refs.length}}" class="refs">
+            <view
+              wx:for="{{item.refs}}"
+              wx:for-item="r"
+              wx:key="name"
+              class="ref"
+              data-poi="{{r.poi_id}}"
+              bindtap="openRef"
+            >
+              <text class="ref-kind">{{r.kind}}</text>
+              <text class="ref-name ellipsis">{{r.name}}</text>
+            </view>
+          </view>
+          <view wx:if="{{item.aigc || item.degraded}}" class="bubble-meta">
+            <text wx:if="{{item.aigc}}" class="tiny-tag aigc">AI 生成</text>
+            <text wx:if="{{item.degraded}}" class="tiny-tag deg">知识库摘录</text>
+          </view>
+        </view>
+        <view wx:if="{{item.time}}" class="time">{{item.time}}</view>
+      </view>
+    </block>
+
+    <view wx:if="{{sending}}" class="row assistant">
+      <view class="bubble assistant typing">小旅正在整理…</view>
+    </view>
+    <view id="msg-bottom" class="msg-bottom"></view>
+  </scroll-view>
+
+  <view class="composer">
+    <textarea
+      class="ta"
+      value="{{input}}"
+      placeholder="问点花溪的事…"
+      maxlength="300"
+      auto-height
+      confirm-type="send"
+      bindinput="onInput"
+      bindconfirm="send"
+    />
+    <button class="send {{canSend ? 'on' : ''}}" disabled="{{!canSend}}" bindtap="send">发送</button>
+  </view>
+  <view class="disclaimer">回答基于站内资源库 · 门票/开放时间以景区公告为准</view>
+
+  <view wx:if="{{historyOpen}}" class="mask" bindtap="closeHistory">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-head">
+        <text class="sheet-title">历史会话</text>
+        <text class="sheet-close" bindtap="closeHistory">关闭</text>
+      </view>
+      <scroll-view class="sheet-list" scroll-y>
+        <view wx:if="{{historyLoading}}" class="sheet-empty">加载中…</view>
+        <view wx:elif="{{!historyList.length}}" class="sheet-empty">还没有历史会话</view>
+        <view
+          wx:for="{{historyList}}"
+          wx:key="id"
+          class="sheet-item"
+          data-id="{{item.id}}"
+          bindtap="pickConversation"
+        >
+          <view class="sheet-item-title ellipsis">{{item.title}}</view>
+          <view class="sheet-item-sub">{{item.message_count}} 条消息</view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>

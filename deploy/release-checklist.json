@@ -1,0 +1,122 @@
+{
+  "version": "2026.11.1",
+  "updated": "2026-11-11",
+  "note": "M0 / M6 流程项状态跟踪。external=true 表示必须由企业主体在微信公众平台、云厂商或通管局办理，代码侧无法代办；办理完成后把 status 改为 done 并填写 evidence。机器可检项由 travel-api/scripts/preflight_release.py 自动判定，不必在此重复维护。",
+  "status_values": {
+    "todo": "未开始",
+    "doing": "办理中",
+    "blocked": "受阻（需升级处理）",
+    "done": "已完成并有凭证",
+    "na": "本期不适用"
+  },
+  "items": [
+    {
+      "id": "M0-01", "phase": "M0", "external": true, "status": "todo",
+      "item": "注册企业/组织主体小程序，取得 AppID", "owner": "运营 / 企业主体",
+      "evidence": "", "blocking": true,
+      "acceptance": "微信公众平台可登录，AppID 回填 travel-miniapp/project.config.json"
+    },
+    {
+      "id": "M0-02", "phase": "M0", "external": true, "status": "todo",
+      "item": "完成微信认证（企业主体）", "owner": "运营 / 企业主体",
+      "evidence": "", "blocking": true,
+      "acceptance": "后台显示认证通过，认证费用与政策以官方最新口径为准"
+    },
+    {
+      "id": "M0-03", "phase": "M0", "external": true, "status": "todo",
+      "item": "确定服务类目：旅游 - 旅游信息查询 / 工具类；完成全端文案红线自查", "owner": "运营 / 产品",
+      "evidence": "", "blocking": true,
+      "acceptance": "类目与一期「无交易」定位一致；页面无预订/下单/购买/代订类表述"
+    },
+    {
+      "id": "M0-04", "phase": "M0", "external": true, "status": "todo",
+      "item": "提交小程序备案并跟踪至通过（2023-09 起强制，一票否决项）", "owner": "运营 / 企业主体",
+      "evidence": "", "blocking": true,
+      "acceptance": "后台备案状态为「已通过」，备案号可公示；M0 最低验收为「已受理」"
+    },
+    {
+      "id": "M0-05", "phase": "M0", "external": true, "status": "todo",
+      "item": "注册域名并完成 ICP 备案（api / www / admin / cdn 子域）", "owner": "运维",
+      "evidence": "", "blocking": true,
+      "acceptance": "备案号下发，服务器在中国内地，备案号填入 .env 与站点页脚"
+    },
+    {
+      "id": "M0-06", "phase": "M0", "external": true, "status": "todo",
+      "item": "申请 SSL 证书并配置自动续期与到期告警", "owner": "运维",
+      "evidence": "", "blocking": true,
+      "acceptance": "各域名 TLS 1.2+ 证书链完整，certbot renew 定时任务可用"
+    },
+    {
+      "id": "M0-07", "phase": "M0", "external": true, "status": "todo",
+      "item": "微信后台登记 request / downloadFile 合法域名", "owner": "运维 / 小程序管理员",
+      "evidence": "", "blocking": true,
+      "acceptance": "登记值与 deploy/legal-domains.md 及代码 config.js 完全一致（含 staging）"
+    },
+    {
+      "id": "M0-08", "phase": "M0", "external": true, "status": "todo",
+      "item": "在微信后台发布《小程序用户隐私保护指引》", "owner": "运营 / 法务",
+      "evidence": "", "blocking": true,
+      "acceptance": "后台公示内容与端内 privacy 页一致，含「当前不收集精确位置」及二期启用说明"
+    },
+    {
+      "id": "M6-01", "phase": "M6", "external": true, "status": "todo",
+      "item": "按 Nginx 模板部署生产 HTTPS 站点与 API 反代", "owner": "运维",
+      "evidence": "", "blocking": false,
+      "acceptance": "http 全跳 https；/docs 关闭；admin 接口不在 api 子域暴露；nginx -t 通过"
+    },
+    {
+      "id": "M6-02", "phase": "M6", "external": true, "status": "todo",
+      "item": "注入生产 .env：真实微信凭据、轮换 JWT_SECRET、修改默认管理口令", "owner": "运维 / 后端",
+      "evidence": "", "blocking": true,
+      "acceptance": "preflight_release.py --env <生产env> --strict 自动检查全绿"
+    },
+    {
+      "id": "M6-03", "phase": "M6", "external": false, "status": "todo",
+      "item": "替换小程序 release/trial 域名与 AppID，开启合法域名校验后重新构建上传", "owner": "小程序开发",
+      "evidence": "", "blocking": true,
+      "acceptance": "体验版与正式版均直连生产域名；开发者工具不再依赖「不校验合法域名」"
+    },
+    {
+      "id": "M6-04", "phase": "M6", "external": false, "status": "todo",
+      "item": "体验版四模式全链路 + 增强全关降级路径走查", "owner": "测试 / 产品",
+      "evidence": "", "blocking": false,
+      "acceptance": "四种模式、个性化、游学线、路线出行方式均可走完；FEATURE_* 全关时行程仍返回"
+    },
+    {
+      "id": "M6-05", "phase": "M6", "external": false, "status": "todo",
+      "item": "真机弱网测试 + 50 并发压测", "owner": "测试 / 后端",
+      "evidence": "", "blocking": false,
+      "acceptance": "线上 P95 < 800ms；弱网下骨架屏与超时提示正常，无白屏"
+    },
+    {
+      "id": "M6-06", "phase": "M6", "external": false, "status": "todo",
+      "item": "内容安全与 AIGC 自查", "owner": "后端 / 产品",
+      "evidence": "", "blocking": false,
+      "acceptance": "msgSecCheck 覆盖自由文本输入；AI 文案（当前未启用）如启用需带「内容由 AI 生成，仅供参考」标识"
+    },
+    {
+      "id": "M6-07", "phase": "M6", "external": true, "status": "todo",
+      "item": "准备提审材料包（功能路径、测试账号、演示步骤、类目说明、隐私指引链接）", "owner": "运营 / 产品",
+      "evidence": "", "blocking": true,
+      "acceptance": "审核人员可无需额外说明走完 3 步生成行程；口径与所选类目一致"
+    },
+    {
+      "id": "M6-08", "phase": "M6", "external": true, "status": "todo",
+      "item": "提交审核 → 驳回整改（预留 2 轮）→ 审核通过", "owner": "运营",
+      "evidence": "", "blocking": true,
+      "acceptance": "微信后台状态「审核通过」，常见驳回点已逐条自查"
+    },
+    {
+      "id": "M6-09", "phase": "M6", "external": true, "status": "todo",
+      "item": "灰度发布 → 全量发布，页脚展示 ICP 备案号", "owner": "运维 / 运营",
+      "evidence": "", "blocking": true,
+      "acceptance": "正式版全量可见；备案号与隐私指引入口可访问；监控与回滚预案就绪"
+    },
+    {
+      "id": "M6-10", "phase": "M6", "external": false, "status": "todo",
+      "item": "上线后监控、证书到期告警与回滚预案演练", "owner": "运维",
+      "evidence": "", "blocking": false,
+      "acceptance": "接口错误率、P95、证书有效期有告警；一次回滚演练通过"
+    }
+  ]
+}

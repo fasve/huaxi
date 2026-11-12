@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eef7f1"/>
+      <stop offset="1" stop-color="#dcefe3"/>
+    </linearGradient>
+    <linearGradient id="mBack" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fd0b2"/>
+      <stop offset="1" stop-color="#6fbd97"/>
+    </linearGradient>
+    <linearGradient id="mFront" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f9e6f"/>
+      <stop offset="1" stop-color="#2f7d5c"/>
+    </linearGradient>
+    <clipPath id="squircle">
+      <rect x="0" y="0" width="512" height="512" rx="112"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#squircle)">
+    <!-- 背景：浅绿渐变 -->
+    <rect x="0" y="0" width="512" height="512" fill="url(#bg)"/>
+
+    <!-- 太阳/光晕 -->
+    <circle cx="120" cy="120" r="44" fill="#ffe9b8" opacity="0.9"/>
+
+    <!-- 远山 -->
+    <path d="M30,348 Q150,128 276,348 Z" fill="url(#mBack)"/>
+
+    <!-- 近山 -->
+    <path d="M168,360 Q300,96 448,360 Z" fill="url(#mFront)"/>
+
+    <!-- 河流路线：S 形白色曲线 -->
+    <path d="M64,452 C140,412 168,336 248,318 C332,300 356,246 436,224"
+          fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round"/>
+
+    <!-- 沿途站点圆点 -->
+    <circle cx="146" cy="390" r="12" fill="#ffffff"/>
+    <circle cx="248" cy="318" r="12" fill="#ffffff"/>
+
+    <!-- 目的地定位标 -->
+    <g>
+      <path d="M436,168 c-31,0 -53,23 -53,52 c0,38 53,72 53,72 s53,-34 53,-72 c0,-29 -22,-52 -53,-52 z"
+            fill="#ff8a5c"/>
+      <circle cx="436" cy="222" r="20" fill="#ffffff"/>
+      <circle cx="436" cy="222" r="9" fill="#ff8a5c"/>
+    </g>
+
+    <!-- 底部浅水带 -->
+    <path d="M0,470 Q130,440 256,462 T512,456 L512,512 L0,512 Z" fill="#bfe3cf" opacity="0.75"/>
+  </g>
+</svg>

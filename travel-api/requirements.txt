@@ -1,0 +1,23 @@
+# NOTE: keep this file ASCII-only. pip reads requirements files with the OS
+# locale codec on Windows (GBK here), so non-ASCII comments break `pip install -r`.
+fastapi>=0.115
+uvicorn[standard]>=0.32
+SQLAlchemy>=2.0
+PyMySQL>=1.1
+cryptography>=41.0
+pydantic>=2.9
+pydantic-settings>=2.6
+python-dotenv>=1.0
+# python-jose: WeChat code2session + self-signed JWT (design doc 7.5)
+python-jose[cryptography]>=3.3
+numpy>=2.1
+openpyxl>=3.1
+python-multipart
+# image fetch / localize (app/services/image_service.py)
+requests>=2.31
+# poster + QR code (app/services/poster_service.py)
+Pillow>=10.0
+qrcode>=7.4
+# optional: only needed when REDIS_URL is set (cache.py imports lazily)
+redis>=5.0
+httpx>=0.28

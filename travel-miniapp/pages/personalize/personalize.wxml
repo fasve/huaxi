@@ -1,0 +1,157 @@
+<view class="pz-page">
+  <view wx:if="{{loading}}" class="pz-loading">配置加载中…</view>
+
+  <block wx:else>
+    <!-- 基准模式 -->
+    <view class="pz-card">
+      <view class="pz-title">① 基准模式</view>
+      <view class="pz-mode-row">
+        <view
+          wx:for="{{modes}}"
+          wx:key="key"
+          class="pz-mode {{mode === item.key ? 'on' : ''}}"
+          data-mode="{{item.key}}"
+          bindtap="switchMode"
+        >
+          <text class="pz-mode-e">{{item.key === 'leisure' ? '🌿' : (item.key === 'blitz' ? '⚡' : (item.key === 'premium' ? '✨' : '📸'))}}</text>
+          <text class="pz-mode-n">{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 行程规模 -->
+    <view class="pz-card">
+      <view class="pz-title">② 行程规模</view>
+      <view class="pz-scale">
+        <view class="pz-scale-item">
+          <view class="pz-scale-label">行程天数：<text class="pz-scale-val">{{days}}</text> 天</view>
+          <slider min="0" max="6" step="1" value="{{daysIndex}}"
+                  bindchange="onDays" activeColor="#2F7D5C" block-size="16" />
+        </view>
+        <view class="pz-scale-item pz-scale-budget">
+          <text class="pz-scale-label">人均预算</text>
+          <view class="pz-budget-wrap">
+            <input class="pz-budget" type="number" value="{{budget}}" bindinput="onBudget" />
+            <text class="pz-scale-unit">元</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 偏好模板 -->
+    <view class="pz-card">
+      <view class="pz-title">③ 偏好模板</view>
+      <view class="pz-preset-grid">
+        <view
+          wx:for="{{presets}}"
+          wx:key="key"
+          class="pz-preset"
+          data-key="{{item.key}}"
+          bindtap="applyPreset"
+        >
+          <text class="pz-p-icon">{{item.icon}}</text>
+          <text class="pz-p-label">{{item.label}}</text>
+          <text class="pz-p-desc">{{item.desc}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 关注度滑块 -->
+    <view class="pz-card">
+      <view class="pz-title">④ 关注度分配<text class="pz-sub">（拖动即生效）</text></view>
+      <view class="pz-slider" wx:for="{{dimensions}}" wx:key="key">
+        <view class="pz-s-head">
+          <text class="pz-s-icon">{{item.icon}}</text>
+          <text class="pz-s-label">{{item.label}}</text>
+          <text class="pz-s-pct">{{percentMap[item.key]}}%</text>
+        </view>
+        <slider
+          class="pz-slider-ctl"
+          min="0"
+          max="100"
+          step="1"
+          value="{{item.value}}"
+          data-key="{{item.key}}"
+          bindchange="onSlider"
+          bindchanging="onSlider"
+          activeColor="#2F7D5C"
+          block-size="18"
+        />
+        <view class="pz-s-hint">{{item.desc}}</view>
+      </view>
+      <view class="pz-total">关注度合计 {{sliderTotal}}</view>
+    </view>
+
+    <!-- 节奏微调 -->
+    <view class="pz-card">
+      <view class="pz-title">⑤ 节奏微调</view>
+      <view class="pz-pace">
+        <view class="pz-pace-item">
+          <view class="pz-pace-label">每日游玩点上限：{{pace.daily_poi_max}} 个</view>
+          <slider min="2" max="6" step="1" value="{{pace.daily_poi_max}}"
+                  bindchange="onPoiMax" activeColor="#2F7D5C" block-size="16" />
+        </view>
+        <view class="pz-pace-item">
+          <view class="pz-pace-label">每日游玩时长上限：{{pace.play_hours_max}} 小时</view>
+          <slider min="3" max="12" step="1" value="{{pace.play_hours_max}}"
+                  bindchange="onPlayHours" activeColor="#2F7D5C" block-size="16" />
+        </view>
+      </view>
+      <view class="pz-sub-label">晚间偏好</view>
+      <view class="pz-evening-row">
+        <view
+          wx:for="{{eveningPrefs}}"
+          wx:key="key"
+          class="pz-chip {{pace.evening === item.key ? 'on' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="setEvening"
+        >{{item.icon}} {{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 选点顺序预览 -->
+    <view class="pz-card">
+      <view class="pz-pv-head">
+        <view class="pz-title" style="margin-bottom:0">选点顺序预览</view>
+        <text class="pz-tag {{personalized ? 'orange' : 'gray'}}">{{personalized ? '已个性化' : '模式默认'}}</text>
+      </view>
+      <view wx:if="{{previewing}}" class="pz-loading">重新计算中…</view>
+      <view wx:elif="{{!preview.length}}" class="pz-loading">暂无候选点</view>
+      <view wx:else class="pz-pv-list">
+        <view class="pz-pv-item" wx:for="{{preview}}" wx:key="poi_id">
+          <text class="pz-pv-rank">{{item.rank}}</text>
+          <image wx:if="{{item.image}}" class="pz-pv-thumb" src="{{item.image}}" mode="aspectFill" />
+          <view wx:else class="pz-pv-thumb pz-pv-thumb-empty">📍</view>
+          <view class="pz-pv-body">
+            <view class="pz-pv-name">{{item.name}}</view>
+            <view class="pz-pv-sub">★ {{item.rating}} · {{item.ticket_price > 0 ? '¥' + item.ticket_price : '免费'}}</view>
+          </view>
+          <text class="pz-pv-delta {{item.rank < item.base_rank ? 'up' : (item.rank > item.base_rank ? 'down' : '')}}">
+            {{item.rank < item.base_rank ? '↑' + (item.base_rank - item.rank) : (item.rank > item.base_rank ? '↓' + (item.rank - item.base_rank) : '–')}}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 差异提示 -->
+    <view wx:if="{{changed.length}}" class="pz-card">
+      <view class="pz-title">与模式默认的差异</view>
+      <view class="pz-changed">
+        <text wx:for="{{changed}}" wx:key="poi_id"
+              class="pz-ch {{item.direction === 'up' ? 'up' : 'down'}}">
+          {{item.direction === 'up' ? '▲' : '▼'}} {{item.name}}
+        </text>
+      </view>
+    </view>
+
+    <view class="pz-actions">
+      <button wx:if="{{targetTripId}}" class="pz-btn" bindtap="reweight" disabled="{{submitting}}">
+        {{submitting ? '重排中…' : '按新权重重排这条行程'}}
+      </button>
+      <button wx:else class="pz-btn" bindtap="generate" disabled="{{submitting}}">
+        {{submitting ? '生成中…' : '生成个性化行程'}}
+      </button>
+      <view class="pz-tip">权重只改变选点优先级，预算、时间窗、不重复等硬约束始终生效。</view>
+    </view>
+  </block>
+</view>

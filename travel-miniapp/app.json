@@ -1,0 +1,58 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/explore/explore",
+    "pages/request/request",
+    "pages/compare/compare",
+    "pages/personalize/personalize",
+    "pages/study/study",
+    "pages/chat/chat",
+    "pages/trip/trip",
+    "pages/mine/mine",
+    "pages/login/login",
+    "pages/privacy/privacy"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#2F7D5C",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "花溪旅行",
+    "backgroundColor": "#F5F7F6",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#8A9A93",
+    "selectedColor": "#2F7D5C",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "assets/tabbar/ic-home.png",
+        "selectedIconPath": "assets/tabbar/ic-home-on.png"
+      },
+      {
+        "pagePath": "pages/explore/explore",
+        "text": "发现",
+        "iconPath": "assets/tabbar/ic-discover.png",
+        "selectedIconPath": "assets/tabbar/ic-discover-on.png"
+      },
+      {
+        "pagePath": "pages/request/request",
+        "text": "定制",
+        "iconPath": "assets/tabbar/ic-plan.png",
+        "selectedIconPath": "assets/tabbar/ic-plan-on.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "assets/tabbar/ic-mine.png",
+        "selectedIconPath": "assets/tabbar/ic-mine-on.png"
+      }
+    ],
+    "custom": true
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}

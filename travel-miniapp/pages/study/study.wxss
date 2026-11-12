@@ -1,0 +1,82 @@
+.page { background: #F5F7F6; padding-bottom: 40rpx; }
+.hero {
+  padding: 44rpx 32rpx 36rpx;
+  background: linear-gradient(120deg, #2F7D5C, #4a9c78);
+  color: #fff;
+}
+.hero-title { font-size: 42rpx; font-weight: 700; }
+.hero-sub { font-size: 24rpx; opacity: .9; margin-top: 12rpx; line-height: 1.6; }
+
+.card {
+  margin: 24rpx 24rpx 0; padding: 26rpx;
+  background: #fff; border-radius: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(28, 60, 46, .05);
+}
+.hint { font-size: 24rpx; color: #8a9791; line-height: 1.7; }
+.sec-title { font-size: 28rpx; font-weight: 700; color: #24352d; margin-bottom: 12rpx; }
+.sec-outer-title { font-size: 28rpx; font-weight: 700; color: #24352d; margin: 34rpx 28rpx 0; }
+
+.date-row, .form-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 28rpx; color: #24352d; padding: 6rpx 0;
+}
+.date-value { color: #2F7D5C; font-weight: 600; }
+.day-note { margin-top: 18rpx; border-radius: 14rpx; padding: 16rpx; }
+.day-note.ok { background: #eef8f1; }
+.day-note.warn { background: #fff5e6; }
+.day-label { font-size: 25rpx; font-weight: 700; color: #24352d; margin-bottom: 6rpx; }
+
+.route-chip {
+  display: inline-block; font-size: 24rpx; color: #5b6b64;
+  border: 1rpx solid #dfe6e2; border-radius: 999rpx;
+  padding: 10rpx 22rpx; margin: 8rpx 12rpx 0 0;
+}
+.route-chip.on { background: #2F7D5C; color: #fff; border-color: #2F7D5C; }
+.route-title { font-size: 34rpx; font-weight: 700; color: #245c42; }
+.route-sub { margin-top: 8rpx; }
+.stat-row { display: flex; margin: 24rpx 0; padding: 20rpx 0; border-top: 1rpx solid #eef1ef; border-bottom: 1rpx solid #eef1ef; }
+.stat { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6rpx; }
+.stat-b { font-size: 30rpx; font-weight: 700; color: #2F7D5C; }
+.summary { font-size: 25rpx; color: #41534a; line-height: 1.8; }
+
+.warn-card { background: #fffaf0; }
+.warn-card .trans { margin-top: 12rpx; }
+.gn-title { font-size: 25rpx; font-weight: 700; color: #95591a; margin: 18rpx 0 8rpx; }
+.gn-item { font-size: 23rpx; color: #95591a; line-height: 1.7; }
+
+.switch-row { display: flex; justify-content: space-between; align-items: center; }
+
+.stop-card { padding: 24rpx; }
+.stop-head { display: flex; align-items: flex-start; gap: 16rpx; }
+.seq {
+  width: 48rpx; height: 48rpx; border-radius: 50%;
+  background: #2F7D5C; color: #fff; font-size: 24rpx; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.stop-titles { flex: 1; min-width: 0; }
+.stop-title { font-size: 28rpx; font-weight: 700; color: #24352d; }
+.stop-place { font-size: 23rpx; color: #8a9791; margin-top: 6rpx; }
+.gate { font-size: 20rpx; border-radius: 999rpx; padding: 5rpx 14rpx; flex-shrink: 0; }
+.gate.ok { background: #eaf7ef; color: #1e6b45; }
+.gate.info { background: #e9f1fb; color: #2d5f9e; }
+.gate.warn { background: #fff1dc; color: #95591a; }
+.tag-row { margin-top: 12rpx; }
+.mini-tag { font-size: 20rpx; color: #2F7D5C; background: #eaf1ed; border-radius: 999rpx; padding: 4rpx 12rpx; margin-right: 10rpx; }
+.mini-tag.warn { color: #95591a; background: #fff1dc; }
+.facts { display: flex; flex-wrap: wrap; gap: 10rpx; margin: 18rpx 0 12rpx; }
+.facts text { font-size: 21rpx; color: #5b6b64; background: #f4f7f5; border-radius: 8rpx; padding: 6rpx 12rpx; }
+.narration { font-size: 25rpx; color: #41534a; line-height: 1.8; }
+.task { margin-top: 12rpx; font-size: 23rpx; color: #245c42; background: #eef7f1; border-radius: 12rpx; padding: 14rpx; line-height: 1.7; }
+.photo { margin-top: 10rpx; font-size: 23rpx; color: #55468c; background: #f3f1fb; border-radius: 12rpx; padding: 14rpx; line-height: 1.7; }
+.stop-card .gn-item { margin-top: 10rpx; }
+
+.gen-card { margin-top: 34rpx; }
+.gen-hint { margin-bottom: 16rpx; }
+.slider-row { font-size: 26rpx; color: #24352d; padding: 14rpx 0; }
+.slider-row slider { margin: 10rpx 0 0; }
+.budget-input { width: 200rpx; text-align: right; font-size: 28rpx; color: #2F7D5C; }
+.gen-btn {
+  margin-top: 24rpx; background: #2F7D5C; color: #fff;
+  font-size: 30rpx; font-weight: 700; border-radius: 14rpx;
+}
+.footer { display: block; text-align: center; margin: 32rpx 24rpx 0; }

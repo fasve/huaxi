@@ -1,0 +1,10 @@
+{
+  "desc": "行程详情含用户生成内容，登录/我的/隐私页涉及个人信息，均不参与微信搜索收录",
+  "rules": [
+    { "action": "disallow", "page": "pages/trip/trip" },
+    { "action": "disallow", "page": "pages/privacy/privacy" },
+    { "action": "disallow", "page": "pages/login/login" },
+    { "action": "disallow", "page": "pages/mine/mine" },
+    { "action": "allow", "page": "*" }
+  ]
+}

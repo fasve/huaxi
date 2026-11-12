@@ -1,0 +1,225 @@
+<view class="page has-bar has-tabbar">
+  <!-- 1 模式 -->
+  <view class="card">
+    <view class="step-head">
+      <view class="step">1</view>
+      <view>
+        <view class="t-h3">选择旅行模式</view>
+        <view class="t-xs">选一种方式，每一档开销都能在下面单独调</view>
+      </view>
+    </view>
+
+    <view class="mode-grid">
+      <view
+        wx:for="{{modes}}"
+        wx:key="mode"
+        class="mode {{mode === item.mode ? 'on' : ''}}"
+        data-mode="{{item.mode}}"
+        bindtap="pickMode"
+      >
+        <view class="mode-top">
+          <text class="mode-e">{{item.emoji}}</text>
+          <text wx:if="{{mode === item.mode}}" class="mode-check">✓</text>
+        </view>
+        <view class="mode-n">{{item.mode_name}}</view>
+        <view class="mode-cost {{item.over ? 'over' : ''}}">≈ ¥{{item.estimate}}</view>
+      </view>
+    </view>
+    <view wx:if="{{modeDesc}}" class="mode-desc">{{modeDesc}}</view>
+    <view wx:if="{{!modes.length}}" class="t-xs">模式加载中…</view>
+  </view>
+
+  <!-- 2 天数与预算 -->
+  <view class="card">
+    <view class="step-head">
+      <view class="step">2</view>
+      <view>
+        <view class="t-h3">天数与预算</view>
+        <view class="t-xs">预算按人均计，含门票、餐饮、住宿分摊</view>
+      </view>
+    </view>
+
+    <view class="day-row">
+      <view
+        class="day-pick {{days === item ? 'on' : ''}}"
+        wx:for="{{daysOptions}}"
+        wx:key="*this"
+        data-day="{{item}}"
+        bindtap="pickDays"
+      >{{item}}</view>
+      <text class="day-unit">天</text>
+    </view>
+
+    <view class="budget-row">
+      <text class="budget-label">人均预算</text>
+      <view class="budget-box">
+        <text class="budget-yen">¥</text>
+        <input
+          class="budget-input t-num"
+          type="number"
+          value="{{budget}}"
+          bindinput="onBudget"
+          placeholder="0"
+        />
+      </view>
+    </view>
+
+    <view class="quick-row">
+      <view
+        wx:for="{{quickBudgets}}"
+        wx:key="*this"
+        class="chip chip-sm {{budget === item ? 'on' : ''}}"
+        data-value="{{item}}"
+        bindtap="pickBudget"
+      >¥{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 3 人群 -->
+  <view class="card">
+    <view class="step-head">
+      <view class="step">3</view>
+      <view>
+        <view class="t-h3">出行人群</view>
+        <view class="t-xs">影响餐厅与住宿的推荐口径</view>
+      </view>
+    </view>
+    <view class="chips">
+      <view
+        wx:for="{{partyTypes}}"
+        wx:key="code"
+        class="chip {{partyType === item.code ? 'on' : ''}}"
+        data-code="{{item.code}}"
+        bindtap="pickParty"
+      >{{item.label}}</view>
+    </view>
+  </view>
+
+  <!-- 4 偏好 -->
+  <view class="card">
+    <view class="step-head">
+      <view class="step">4</view>
+      <view>
+        <view class="t-h3">旅行偏好<text class="opt">可选</text></view>
+        <view class="t-xs">只作用于景点与休闲点；餐厅按就近、酒店按档次约束</view>
+      </view>
+    </view>
+    <view class="chips">
+      <view
+        wx:for="{{tags}}"
+        wx:key="code"
+        class="chip {{selectedPrefs.indexOf(item.code) >= 0 ? 'on' : ''}}"
+        data-code="{{item.code}}"
+        bindtap="togglePref"
+      >{{item.name}}</view>
+    </view>
+    <view wx:if="{{!tags.length}}" class="t-xs">标签加载中…</view>
+  </view>
+
+  <!-- 5 开销 -->
+  <view class="card">
+    <view class="step-head" bindtap="toggleConfig">
+      <view class="step">5</view>
+      <view class="flex-1">
+        <view class="t-h3">开销微调<text class="opt">{{showConfig ? '收起' : '展开'}}</text></view>
+        <view class="t-xs">住宿 / 餐饮 / 交通 / 晚间与节奏都会计入下方开销</view>
+      </view>
+      <text class="caret {{showConfig ? 'up' : ''}}">▾</text>
+    </view>
+
+    <view wx:if="{{showConfig}}" class="cfg">
+      <view wx:for="{{groups}}" wx:key="key" wx:for-item="g" class="cfg-group">
+        <view class="cfg-label">{{g.label}}</view>
+        <view class="pills">
+          <view
+            wx:for="{{g.options}}"
+            wx:key="key"
+            wx:for-item="o"
+            class="pill {{o.on ? 'on' : ''}}"
+            data-group="{{g.key}}"
+            data-key="{{o.key}}"
+            bindtap="pickPart"
+          >
+            <text class="pill-b">{{o.label}}</text>
+            <text class="pill-s">{{o.desc}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="slider-row">
+        <view class="row-between">
+          <text class="cfg-label">每日景点数</text>
+          <text class="t-num t-brand">{{parts.daily_poi}} 个/天</text>
+        </view>
+        <slider min="2" max="6" step="1" value="{{parts.daily_poi}}" activeColor="#2F7D5C" block-size="20" bindchange="onDailyPoi" />
+      </view>
+      <view class="slider-row">
+        <view class="row-between">
+          <text class="cfg-label">游玩节奏</text>
+          <text class="t-num t-brand">{{parts.play_hours}} 小时/天</text>
+        </view>
+        <slider min="3" max="12" step="1" value="{{parts.play_hours}}" activeColor="#2F7D5C" block-size="20" bindchange="onPlayHours" />
+      </view>
+    </view>
+
+    <!-- 开销明细 -->
+    <view wx:if="{{estimate}}" class="est {{estimate.fit}}">
+      <view class="est-head">
+        <view>
+          <view class="t-xs">整体开销预估</view>
+          <view class="est-total t-num">¥{{estimate.total}}</view>
+        </view>
+        <view class="badge {{estimate.fit === 'within' ? 'badge-ok' : (estimate.fit === 'slight' ? 'badge-warn' : 'badge-danger')}}">
+          {{estimateFitText}} · {{estimate.usagePercent}}%
+        </view>
+      </view>
+
+      <view class="est-rows">
+        <view wx:for="{{estimateRows}}" wx:key="label" wx:for-item="r" class="est-cell">
+          <text class="t-xs">{{r.label}}</text>
+          <text class="est-v t-num">¥{{r.value}}<text wx:if="{{r.note}}" class="est-note">{{r.note}}</text></text>
+        </view>
+      </view>
+
+      <view class="bar">
+        <view class="bar-fill" style="width: {{estimate.usagePercent > 100 ? 100 : estimate.usagePercent}}%"></view>
+      </view>
+      <view class="est-status">{{estimate.statusText}}</view>
+      <view class="est-tip">{{estimate.suggestion}}</view>
+    </view>
+  </view>
+
+  <!-- 次级动作 -->
+  <view class="sub-actions">
+    <button class="btn btn-ghost btn-block" bindtap="goCompare">先对比四种模式</button>
+    <button class="btn btn-soft btn-block" bindtap="goPersonalize">按权重个性化</button>
+  </view>
+
+  <!-- 规则 -->
+  <view class="card rules">
+    <view class="t-h4">生成规则</view>
+    <view class="rule"><text class="rule-k">预算硬约束</text>全程花费不超过预算弹性上限，住宿按晚计入</view>
+    <view class="rule"><text class="rule-k">时间窗对齐</text>午餐 11:30 后、晚餐 18:00 后，排不下则留白</view>
+    <view class="rule"><text class="rule-k">不重复</text>同一行程内每个资源点只出现一次</view>
+    <view class="rule"><text class="rule-k">路线就近</text>同槽位按最近邻 + 2-opt 排序</view>
+    <view class="rule"><text class="rule-k">分级松弛</text>候选不足时逐级放宽并提示，不静默降质</view>
+    <view class="rules-note">
+      预算参考：特种兵 ¥100–250/天，休闲 ¥300–600/天，打卡 ¥300–700/天，高端 ¥1000–2000/天。预算偏低时高端游会自动降级。
+    </view>
+  </view>
+
+  <!-- 底部结算条 -->
+  <view wx:if="{{estimate}}" class="bottom-bar">
+    <view class="bb-left">
+      <text class="t-xs">整体开销</text>
+      <text class="bb-num t-num {{estimate.fit}}">¥{{estimate.total}}</text>
+    </view>
+    <view class="bb-mid">
+      <view class="bb-track">
+        <view class="bb-fill {{estimate.fit}}" style="width: {{estimate.usagePercent > 100 ? 100 : estimate.usagePercent}}%"></view>
+      </view>
+      <text class="t-xs">{{estimateFitText}} · 预算 ¥{{budget}}</text>
+    </view>
+    <button class="btn btn-primary bb-btn" loading="{{submitting}}" bindtap="submit">生成行程</button>
+  </view>
+</view>
